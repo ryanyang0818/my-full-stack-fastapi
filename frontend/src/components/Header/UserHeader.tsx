@@ -2,11 +2,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
 import { getInitials } from "@/utils"
+import { useHeaderVisibility } from "./header-visibility"
 
 // 顯示平台名稱、側邊欄開關與目前登入使用者
 export function UserHeader() {
   const { user } = useAuth()
+  const { userHeaderVisible } = useHeaderVisibility()
   const displayName = user?.full_name || user?.email || "User"
+
+  if (!userHeaderVisible) return null
 
   return (
     <div className="flex h-[var(--user-header-height)] items-center justify-between gap-4 border-b bg-background px-4">

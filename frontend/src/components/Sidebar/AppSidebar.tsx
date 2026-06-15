@@ -28,7 +28,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="top-[var(--user-header-height)] h-[calc(100svh-var(--user-header-height))] md:top-[calc(var(--app-menu-bar-height)+var(--user-header-height))] md:h-[calc(100svh-var(--app-menu-bar-height)-var(--user-header-height))]"
+      className="top-[var(--user-header-layout-height)] h-[calc(100svh-var(--user-header-layout-height))] md:top-[calc(var(--app-menu-layout-height)+var(--user-header-layout-height))] md:h-[calc(100svh-var(--app-menu-layout-height)-var(--user-header-layout-height))]"
     >
       <SidebarHeader className="px-4 py-6 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
         <Logo variant="responsive" />
