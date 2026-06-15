@@ -17,6 +17,7 @@ const baseItems: Item[] = [
   { icon: Briefcase, title: "Items", path: "/items" },
 ]
 
+// 組合登入後頁面的主選單、外觀設定與使用者資訊
 export function AppSidebar() {
   const { user: currentUser } = useAuth()
 
@@ -25,7 +26,10 @@ export function AppSidebar() {
     : baseItems
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      className="top-[var(--user-header-height)] h-[calc(100svh-var(--user-header-height))] md:top-[calc(var(--app-menu-bar-height)+var(--user-header-height))] md:h-[calc(100svh-var(--app-menu-bar-height)-var(--user-header-height))]"
+    >
       <SidebarHeader className="px-4 py-6 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
         <Logo variant="responsive" />
       </SidebarHeader>
