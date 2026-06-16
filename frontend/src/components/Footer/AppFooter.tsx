@@ -14,6 +14,13 @@ const footerStatus = {
   language: "繁體中文",
 } as const
 
+const revealDelayMs = 200
+const hideDelayMs = 400
+
+type AppFooterProps = {
+  onLayoutVisibilityChange?: (visible: boolean) => void
+}
+
 // 格式化 ERP footer 顯示時間
 function formatFooterTime(date: Date) {
   const year = date.getFullYear()
@@ -27,13 +34,80 @@ function formatFooterTime(date: Date) {
 }
 
 // 顯示登入後 ERP 風格底部狀態列
-export function AppFooter() {
+export function AppFooter({ onLayoutVisibilityChange }: AppFooterProps) {
   const footerRef = useRef<HTMLElement | null>(null)
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { user } = useAuth()
+  const [footerVisible, setFooterVisible] = useState(true)
+  const [temporarilyVisible, setTemporarilyVisible] = useState(false)
   const [currentTime, setCurrentTime] = useState(() =>
     formatFooterTime(new Date()),
   )
   const userName = user?.full_name || user?.email || "User"
+  const visible = footerVisible || temporarilyVisible
+
+  // 取消尚未執行的延遲顯示
+  const cancelReveal = () => {
+    if (revealTimerRef.current) {
+      clearTimeout(revealTimerRef.current)
+      revealTimerRef.current = null
+    }
+  }
+
+  // 取消尚未執行的延遲隱藏
+  const cancelHide = () => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+  }
+
+  // 由畫面底部感應區暫時喚回 footer
+  const revealTemporarily = () => {
+    cancelHide()
+    cancelReveal()
+    revealTimerRef.current = setTimeout(() => {
+      setTemporarilyVisible(true)
+      revealTimerRef.current = null
+    }, revealDelayMs)
+  }
+
+  // 滑鼠離開後延遲收起 footer
+  const scheduleHide = () => {
+    cancelReveal()
+    cancelHide()
+    hideTimerRef.current = setTimeout(() => {
+      setTemporarilyVisible(false)
+      hideTimerRef.current = null
+    }, hideDelayMs)
+  }
+
+  // 固定顯示 footer
+  const show = () => {
+    cancelReveal()
+    cancelHide()
+    setTemporarilyVisible(false)
+    setFooterVisible(true)
+  }
+
+  // 隱藏固定顯示的 footer
+  const hide = () => {
+    cancelReveal()
+    cancelHide()
+    setTemporarilyVisible(false)
+    setFooterVisible(false)
+  }
+
+  // 切換 footer 固定顯示狀態
+  const toggle = () => {
+    if (footerVisible) {
+      hide()
+      return
+    }
+
+    show()
+  }
 
   // 每秒更新 footer 顯示時間
   useEffect(() => {
@@ -44,11 +118,21 @@ export function AppFooter() {
     return () => window.clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    onLayoutVisibilityChange?.(visible)
+  }, [onLayoutVisibilityChange, visible])
+
+  useEffect(() => {
+    return () => onLayoutVisibilityChange?.(false)
+  }, [onLayoutVisibilityChange])
+
   // 取得 footer 對外狀態
   const getState = () =>
     ({
       name: "footer",
       mounted: Boolean(footerRef.current),
+      visible,
+      temporarilyVisible,
       ...footerStatus,
       userName,
       currentTime,
@@ -60,6 +144,9 @@ export function AppFooter() {
   useEffect(() => {
     const controller: DodoFooterController = {
       name: "footer",
+      show,
+      hide,
+      toggle,
       getState,
       getElement,
     }
@@ -67,32 +154,58 @@ export function AppFooter() {
     return registerDodoControllerSection("footer", controller)
   })
 
-  return (
-    <footer
-      ref={footerRef}
-      data-dodo-section="footer"
-      className="fixed inset-x-0 bottom-0 z-30 flex h-[var(--app-footer-height)] items-center justify-between gap-4 overflow-hidden border-t border-slate-300 bg-slate-100 px-3 text-[11px] text-slate-800"
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="inline-flex shrink-0 items-center gap-1.5 font-medium text-emerald-700">
-          <span
-            aria-hidden="true"
-            className="size-1.5 rounded-full bg-emerald-600"
-          />
-          <span>{footerStatus.connectionStatus}</span>
-        </span>
-        <span className="shrink-0">DB: {footerStatus.database}</span>
-        <span className="shrink-0">公司: {footerStatus.company}</span>
-        <span className="shrink-0">會計年度: {footerStatus.fiscalYear}</span>
-      </div>
+  useEffect(() => {
+    return () => {
+      cancelReveal()
+      cancelHide()
+    }
+  }, [])
 
-      <div className="ml-auto flex min-w-0 shrink-0 items-center gap-3">
-        <span className="shrink-0">{footerStatus.language}</span>
-        <span className="max-w-28 truncate">{userName}</span>
-        <time className="shrink-0 font-mono text-[10px]" dateTime={currentTime}>
-          {currentTime}
-        </time>
-      </div>
-    </footer>
+  return (
+    <>
+      {!visible && (
+        <div
+          className="fixed inset-x-0 bottom-0 z-30 h-1"
+          onMouseEnter={revealTemporarily}
+          onMouseLeave={cancelReveal}
+          aria-hidden="true"
+        />
+      )}
+      {visible && (
+        <footer
+          ref={footerRef}
+          data-dodo-section="footer"
+          className="fixed inset-x-0 bottom-0 z-40 flex h-[var(--app-footer-height)] items-center justify-between gap-4 overflow-hidden border-t border-slate-300 bg-slate-100 px-3 text-[11px] text-slate-800 shadow-sm motion-safe:animate-in motion-safe:slide-in-from-bottom"
+          onMouseEnter={cancelHide}
+          onMouseLeave={scheduleHide}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="inline-flex shrink-0 items-center gap-1.5 font-medium text-emerald-700">
+              <span
+                aria-hidden="true"
+                className="size-1.5 rounded-full bg-emerald-600"
+              />
+              <span>{footerStatus.connectionStatus}</span>
+            </span>
+            <span className="shrink-0">DB: {footerStatus.database}</span>
+            <span className="shrink-0">公司: {footerStatus.company}</span>
+            <span className="shrink-0">
+              會計年度: {footerStatus.fiscalYear}
+            </span>
+          </div>
+
+          <div className="ml-auto flex min-w-0 shrink-0 items-center gap-3">
+            <span className="shrink-0">{footerStatus.language}</span>
+            <span className="max-w-28 truncate">{userName}</span>
+            <time
+              className="shrink-0 font-mono text-[10px]"
+              dateTime={currentTime}
+            >
+              {currentTime}
+            </time>
+          </div>
+        </footer>
+      )}
+    </>
   )
 }

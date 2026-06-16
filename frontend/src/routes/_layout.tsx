@@ -4,6 +4,7 @@ import {
   type ReactNode,
   useEffect,
   useRef,
+  useState,
 } from "react"
 
 import { AppFooter } from "@/components/Footer/AppFooter"
@@ -71,11 +72,15 @@ function MainContentController({ children }: { children: ReactNode }) {
 // 依 Header 顯示狀態計算版面保留高度
 function AuthenticatedLayout() {
   const { appMenuVisible, userHeaderVisible } = useHeaderVisibility()
+  const [footerLayoutVisible, setFooterLayoutVisible] = useState(false)
   const appMenuLayoutHeight = appMenuVisible
     ? "var(--app-menu-bar-height)"
     : "0rem"
   const userHeaderLayoutHeight = userHeaderVisible
     ? "var(--user-header-height)"
+    : "0rem"
+  const footerLayoutHeight = footerLayoutVisible
+    ? "var(--app-footer-height)"
     : "0rem"
 
   return (
@@ -87,6 +92,7 @@ function AuthenticatedLayout() {
           "--app-footer-height": "1.75rem",
           "--app-menu-layout-height": appMenuLayoutHeight,
           "--user-header-layout-height": userHeaderLayoutHeight,
+          "--app-footer-layout-height": footerLayoutHeight,
         } as CSSProperties
       }
       className="pt-[var(--user-header-layout-height)] md:pt-[calc(var(--app-menu-layout-height)+var(--user-header-layout-height))]"
@@ -97,14 +103,14 @@ function AuthenticatedLayout() {
       </header>
       <SidebarControllerBridge />
       <AppSidebar />
-      <SidebarInset className="pb-[var(--app-footer-height)]">
+      <SidebarInset className="pb-[var(--app-footer-layout-height)]">
         <MainContentController>
           <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>
         </MainContentController>
       </SidebarInset>
-      <AppFooter />
+      <AppFooter onLayoutVisibilityChange={setFooterLayoutVisible} />
     </SidebarProvider>
   )
 }

@@ -50,6 +50,8 @@ export type DodoMainContentController = {
 export type DodoFooterState = {
   name: "footer"
   mounted: boolean
+  visible: boolean
+  temporarilyVisible: boolean
   connectionStatus: "已連線"
   database: "PROD-TPE-01"
   company: "DoDo 台北總公司"
@@ -61,6 +63,9 @@ export type DodoFooterState = {
 
 export type DodoFooterController = {
   name: "footer"
+  show: () => void
+  hide: () => void
+  toggle: () => void
   getState: () => DodoFooterState
   getElement: () => HTMLElement | null
 }
