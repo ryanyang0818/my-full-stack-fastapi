@@ -28,3 +28,9 @@ openapi.json
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Local Claude/Codex files
+.claude/*
+.codex/*
+CLAUDE.md
+AGENTS.md
