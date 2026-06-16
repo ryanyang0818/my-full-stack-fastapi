@@ -4,9 +4,10 @@
 
 ## 讀取順序
 
-1. `AGENTS.md`
-2. `.codex/README.md`
-3. `.codex/SOP.md`
+1. `AGENTS.md`（入口，含人格、設計原則、計畫流程）
+2. `docs/專案介紹.md`（技術棧與目錄結構）
+3. `.codex/README.md`（本檔）
+4. `.codex/SOP.md`
 5. `.codex/WORKFLOW.md`
 
 ## 文件用途
@@ -19,4 +20,3 @@
 ## 自動生效方式
 
 Codex 不會天然讀取整個 `.codex` 資料夾。要讓這些文件自動生效，必須透過專案根目錄的 `AGENTS.md` 明確要求 Codex 先讀 `.codex/README.md`，再依索引讀取其他文件。
-
