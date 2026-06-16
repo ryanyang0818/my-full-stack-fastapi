@@ -99,3 +99,11 @@ test("window.dodo.controller exposes mainContent controller", async ({
 
   expect(sectionName).toBe("mainContent")
 })
+
+// 驗證 footer controller 能查詢 ERP 底部狀態列
+test("window.dodo.controller exposes footer controller", async ({ page }) => {
+  const footer = page.locator('[data-dodo-section="footer"]')
+
+  await expect(footer.getByText("已連線", { exact: true })).toBeVisible()
+
+})

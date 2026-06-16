@@ -3,6 +3,7 @@ export type DodoSectionName =
   | "userHeader"
   | "sidebar"
   | "mainContent"
+  | "footer"
 
 export type DodoVisibilityState = {
   name: "appHeader" | "userHeader"
@@ -46,11 +47,30 @@ export type DodoMainContentController = {
   getElement: () => HTMLElement | null
 }
 
+export type DodoFooterState = {
+  name: "footer"
+  mounted: boolean
+  connectionStatus: "已連線"
+  database: "PROD-TPE-01"
+  company: "DoDo 台北總公司"
+  fiscalYear: 2026
+  language: "繁體中文"
+  userName: string
+  currentTime: string
+}
+
+export type DodoFooterController = {
+  name: "footer"
+  getState: () => DodoFooterState
+  getElement: () => HTMLElement | null
+}
+
 export type DodoController = {
   appHeader: DodoVisibilityController
   userHeader: DodoVisibilityController
   sidebar: DodoSidebarController
   mainContent: DodoMainContentController
+  footer: DodoFooterController
 }
 
 declare global {

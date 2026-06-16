@@ -6,7 +6,7 @@ import {
   useRef,
 } from "react"
 
-import { Footer } from "@/components/Common/Footer"
+import { AppFooter } from "@/components/Footer/AppFooter"
 import { AppMenuBar } from "@/components/Header/AppMenuBar"
 import {
   HeaderVisibilityProvider,
@@ -84,6 +84,7 @@ function AuthenticatedLayout() {
         {
           "--app-menu-bar-height": "2rem",
           "--user-header-height": "3rem",
+          "--app-footer-height": "1.75rem",
           "--app-menu-layout-height": appMenuLayoutHeight,
           "--user-header-layout-height": userHeaderLayoutHeight,
         } as CSSProperties
@@ -96,14 +97,14 @@ function AuthenticatedLayout() {
       </header>
       <SidebarControllerBridge />
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="pb-[var(--app-footer-height)]">
         <MainContentController>
           <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>
         </MainContentController>
-        <Footer />
       </SidebarInset>
+      <AppFooter />
     </SidebarProvider>
   )
 }
