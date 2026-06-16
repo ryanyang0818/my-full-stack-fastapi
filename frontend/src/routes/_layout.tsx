@@ -38,7 +38,7 @@ function AuthenticatedLayout() {
       style={
         {
           "--app-menu-bar-height": "2rem",
-          "--user-header-height": "3.5rem",
+          "--user-header-height": "3rem",
           "--app-menu-layout-height": appMenuLayoutHeight,
           "--user-header-layout-height": userHeaderLayoutHeight,
         } as CSSProperties
