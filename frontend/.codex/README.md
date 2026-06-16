@@ -8,14 +8,12 @@
 2. `docs/專案介紹.md`（技術棧與目錄結構）
 3. `.codex/README.md`（本檔）
 4. `.codex/SOP.md`
-5. `.codex/WORKFLOW.md`
 
 ## 文件用途
 
 | 檔案 | 用途 |
 |---|---|
 | `SOP.md` | 計畫、歸檔與使用者互動規則 |
-| `WORKFLOW.md` | 實作、驗證、提交的工作流程 |
 
 ## 自動生效方式
 

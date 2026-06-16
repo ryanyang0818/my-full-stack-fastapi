@@ -1,5 +1,10 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import type { CSSProperties } from "react"
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useRef,
+} from "react"
 
 import { Footer } from "@/components/Common/Footer"
 import { AppMenuBar } from "@/components/Header/AppMenuBar"
@@ -9,8 +14,13 @@ import {
 } from "@/components/Header/header-visibility"
 import { UserHeader } from "@/components/Header/UserHeader"
 import AppSidebar from "@/components/Sidebar/AppSidebar"
+import { SidebarControllerBridge } from "@/components/Sidebar/SidebarControllerBridge"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { isLoggedIn } from "@/hooks/useAuth"
+import {
+  type DodoMainContentController,
+  registerDodoControllerSection,
+} from "@/lib/dodo-controller"
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
@@ -22,6 +32,41 @@ export const Route = createFileRoute("/_layout")({
     }
   },
 })
+
+// 註冊登入後中央內容區的 Console 查詢介面
+function MainContentController({ children }: { children: ReactNode }) {
+  const mainContentRef = useRef<HTMLElement | null>(null)
+
+  // 取得中央內容區對外狀態
+  const getState = () =>
+    ({
+      name: "mainContent",
+      mounted: Boolean(mainContentRef.current),
+    }) as const
+
+  // 取得中央內容區 DOM element
+  const getElement = () => mainContentRef.current
+
+  useEffect(() => {
+    const controller: DodoMainContentController = {
+      name: "mainContent",
+      getState,
+      getElement,
+    }
+
+    return registerDodoControllerSection("mainContent", controller)
+  }, [])
+
+  return (
+    <main
+      ref={mainContentRef}
+      data-dodo-section="mainContent"
+      className="flex-1 p-6 md:p-8"
+    >
+      {children}
+    </main>
+  )
+}
 
 // 依 Header 顯示狀態計算版面保留高度
 function AuthenticatedLayout() {
@@ -49,13 +94,14 @@ function AuthenticatedLayout() {
         <AppMenuBar />
         <UserHeader />
       </header>
+      <SidebarControllerBridge />
       <AppSidebar />
       <SidebarInset>
-        <main className="flex-1 p-6 md:p-8">
+        <MainContentController>
           <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>
-        </main>
+        </MainContentController>
         <Footer />
       </SidebarInset>
     </SidebarProvider>

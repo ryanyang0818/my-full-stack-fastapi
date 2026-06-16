@@ -17,7 +17,10 @@ export function UserHeader() {
   if (!userHeaderVisible) return null
 
   return (
-    <div className="flex h-[var(--user-header-height)] min-w-0 items-center gap-4 overflow-hidden border-b border-slate-200 bg-white px-3 text-[13px] text-slate-800">
+    <div
+      data-dodo-section="userHeader"
+      className="flex h-[var(--user-header-height)] min-w-0 items-center gap-4 overflow-hidden border-b border-slate-200 bg-white px-3 text-[13px] text-slate-800"
+    >
       <div className="flex h-full shrink-0 items-center gap-2.5 border-r border-slate-200 pr-5">
         <div className="grid size-[30px] place-items-center rounded bg-blue-600 text-base font-bold text-white">
           D

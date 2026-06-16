@@ -82,6 +82,7 @@ export function AppMenuBar() {
         />
         {temporarilyVisible && (
           <div
+            data-dodo-section="appHeader"
             className="fixed inset-x-0 top-0 z-40 hidden h-[var(--app-menu-bar-height)] items-center border-b bg-muted px-4 text-xs text-foreground shadow-sm motion-safe:animate-in motion-safe:slide-in-from-top md:flex"
             onMouseEnter={cancelHide}
             onMouseLeave={scheduleHide}
@@ -94,7 +95,10 @@ export function AppMenuBar() {
   }
 
   return (
-    <div className="hidden h-[var(--app-menu-bar-height)] items-center border-b bg-muted px-4 text-xs text-foreground md:flex">
+    <div
+      data-dodo-section="appHeader"
+      className="hidden h-[var(--app-menu-bar-height)] items-center border-b bg-muted px-4 text-xs text-foreground md:flex"
+    >
       {menuContent}
     </div>
   )

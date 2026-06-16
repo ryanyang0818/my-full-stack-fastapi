@@ -8,6 +8,11 @@ import {
   useState,
 } from "react"
 
+import {
+  registerDodoControllerSection,
+  type DodoVisibilityController,
+} from "@/lib/dodo-controller"
+
 type HeaderVisibilityState = {
   appMenuVisible: boolean
   userHeaderVisible: boolean
@@ -70,6 +75,18 @@ export function HeaderVisibilityProvider({
     setUserHeaderVisible(true)
   }, [])
 
+  // 取得 App Header 對外顯示狀態
+  const getAppHeaderState = useCallback(
+    () => ({ name: "appHeader", visible: appMenuVisible }) as const,
+    [appMenuVisible],
+  )
+
+  // 取得 User Header 對外顯示狀態
+  const getUserHeaderState = useCallback(
+    () => ({ name: "userHeader", visible: userHeaderVisible }) as const,
+    [userHeaderVisible],
+  )
+
   const value = useMemo(
     () => ({
       appMenuVisible,
@@ -109,10 +126,35 @@ export function HeaderVisibilityProvider({
       showAll,
       getState: () => ({ appMenuVisible, userHeaderVisible }),
     }
+    const appHeaderController: DodoVisibilityController = {
+      name: "appHeader",
+      show: showAppMenu,
+      hide: hideAppMenu,
+      toggle: toggleAppMenu,
+      getState: getAppHeaderState,
+    }
+    const userHeaderController: DodoVisibilityController = {
+      name: "userHeader",
+      show: showUserHeader,
+      hide: hideUserHeader,
+      toggle: toggleUserHeader,
+      getState: getUserHeaderState,
+    }
+    const unregisterAppHeader = registerDodoControllerSection(
+      "appHeader",
+      appHeaderController,
+    )
+    const unregisterUserHeader = registerDodoControllerSection(
+      "userHeader",
+      userHeaderController,
+    )
 
     window.headerControls = controls
 
     return () => {
+      unregisterAppHeader()
+      unregisterUserHeader()
+
       if (window.headerControls === controls) {
         delete window.headerControls
       }
@@ -128,6 +170,8 @@ export function HeaderVisibilityProvider({
     toggleUserHeader,
     hideAll,
     showAll,
+    getAppHeaderState,
+    getUserHeaderState,
   ])
 
   return (
