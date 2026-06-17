@@ -2,12 +2,10 @@ import { useState } from "react"
 import { Briefcase, Home, Users } from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
-import { Logo } from "@/components/Common/Logo"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
@@ -37,9 +35,6 @@ export function AppSidebar() {
       data-dodo-section="sidebar"
       className="top-[var(--user-header-layout-height)] h-[calc(100svh-var(--user-header-layout-height)-var(--app-footer-layout-height))] md:top-[calc(var(--app-menu-layout-height)+var(--user-header-layout-height))] md:h-[calc(100svh-var(--app-menu-layout-height)-var(--user-header-layout-height)-var(--app-footer-layout-height))]"
     >
-      <SidebarHeader className="px-4 py-6 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
-        <Logo variant="responsive" />
-      </SidebarHeader>
       <SidebarContent>
         <Main items={items} />
         <SidebarSearch value={search} onChange={setSearch} />
