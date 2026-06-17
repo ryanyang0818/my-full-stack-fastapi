@@ -1,0 +1,70 @@
+# 技術棧
+
+## 收錄原則
+
+- 收錄語言、runtime、主框架、資料庫、容器、架構級工具與團隊需要主動維護的技術。
+- 不把所有 `package.json` / `pyproject.toml` 套件都列入技術棧。
+- 小型 helper、底層相依套件、單一功能輔助套件，通常不放主技術棧。
+- 若某套件是由主要框架或 UI 系統間接帶入，優先記錄上層技術。
+
+## 語言與 Runtime
+
+- Python：後端主要語言。
+- TypeScript：前端主要開發語言，包含 React TSX 元件。
+- JavaScript：瀏覽器執行環境與前端生態基礎。
+- Bun：前端套件管理、workspace scripts 與開發指令執行工具。
+- uv：Python workspace / dependency 管理工具。
+
+## 前端
+
+- React：前端 UI 框架。
+- Vite：前端開發伺服器與建置工具。
+- Tailwind CSS v4：主要 CSS utility framework。
+- shadcn/ui：UI component 組織方式。
+- Radix UI：shadcn/ui 底層互動元件基礎。
+- lucide-react：圖示系統。
+- TanStack Router：前端路由。
+- TanStack Query：API server state 管理。
+- TanStack Table：資料表格邏輯。
+- React Hook Form：表單狀態管理。
+- Zod：前端表單驗證 schema。
+- Axios / OpenAPI client：API 呼叫與後端型別 client。
+- Sonner：Toast 通知。
+- next-themes：主題切換。
+
+## 後端
+
+- FastAPI：後端 API 框架。
+- Pydantic：資料驗證與 settings 管理。
+- SQLModel：ORM / model layer。
+- PostgreSQL：主要資料庫。
+- Alembic：資料庫 migration。
+- psycopg：PostgreSQL driver。
+- JWT / pwdlib：登入 token 與密碼雜湊。
+- Jinja2 / emails：Email template 與寄信功能。
+- Sentry SDK：錯誤監控整合。
+
+## 容器與本機服務
+
+- Docker：容器化執行環境。
+- Docker Compose：本機多服務編排。
+- Traefik：Reverse proxy / routing。
+- Adminer：資料庫管理介面。
+- Mailcatcher：本機 email 測試服務。
+
+## 測試與品質工具
+
+- Playwright：前端 E2E 測試。
+- pytest：後端測試。
+- coverage：後端測試覆蓋率。
+- Biome：前端 lint / format。
+- Ruff：後端 lint。
+- mypy / ty：Python 型別檢查。
+
+## 不列入主技術棧的例子
+
+- `clsx`：className helper，屬於實作輔助。
+- `tailwind-merge`：Tailwind class merge helper，屬於實作輔助。
+- `class-variance-authority`：component variant helper，偏 UI 實作細節。
+- `form-data`：HTTP / form request 輔助套件。
+- `email-validator`：後端 email 驗證輔助套件。
