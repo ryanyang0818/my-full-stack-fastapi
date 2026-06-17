@@ -23,6 +23,7 @@ openapi.json
 *.njsproj
 *.sln
 *.sw?
+/demo/
 /test-results/
 /playwright-report/
 /blob-report/
@@ -31,7 +32,7 @@ openapi.json
 /playwright/.auth/
 
 # Local Claude/Codex files
-.claude/*
-.codex/*
+/.claude/
+/.codex/
 CLAUDE.md
 AGENTS.md
