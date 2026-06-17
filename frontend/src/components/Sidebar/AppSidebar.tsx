@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Briefcase, Home, Users } from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
@@ -10,6 +11,9 @@ import {
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
 import { type Item, Main } from "./Main"
+import { SidebarSearch } from "./SidebarSearch"
+import { TreeMenu } from "./TreeMenu"
+import { TREE_DATA } from "./tree-data"
 import { User } from "./User"
 
 const baseItems: Item[] = [
@@ -17,9 +21,10 @@ const baseItems: Item[] = [
   { icon: Briefcase, title: "Items", path: "/items" },
 ]
 
-// 組合登入後頁面的主選單、外觀設定與使用者資訊
+// 組合登入後頁面的主選單、樹狀選單、外觀設定與使用者資訊
 export function AppSidebar() {
   const { user: currentUser } = useAuth()
+  const [search, setSearch] = useState("")
 
   const items = currentUser?.is_superuser
     ? [...baseItems, { icon: Users, title: "Admin", path: "/admin" }]
@@ -36,6 +41,8 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <Main items={items} />
+        <SidebarSearch value={search} onChange={setSearch} />
+        <TreeMenu data={TREE_DATA} search={search} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarAppearance />
