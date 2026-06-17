@@ -25,7 +25,9 @@ import { useIsMobile } from "@/hooks/useMobile"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "16rem"
+const MIN_SIDEBAR_WIDTH = 100
+const MAX_SIDEBAR_WIDTH = 420
+const DEFAULT_SIDEBAR_WIDTH = 250
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
@@ -37,10 +39,17 @@ type SidebarContextProps = {
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
+  sidebarWidth: number
+  setSidebarWidth: (width: number) => void
   toggleSidebar: () => void
 }
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null)
+
+// 限制 Sidebar 拖曳寬度在可用範圍內
+function clampSidebarWidth(width: number) {
+  return Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, width))
+}
 
 function useSidebar() {
   const context = React.useContext(SidebarContext)
@@ -66,6 +75,7 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
+  const [sidebarWidth, setSidebarWidth] = React.useState(DEFAULT_SIDEBAR_WIDTH)
 
   const getInitialOpen = () => {
     if (typeof document === "undefined") return defaultOpen
@@ -131,9 +141,19 @@ function SidebarProvider({
       isMobile,
       openMobile,
       setOpenMobile,
+      sidebarWidth,
+      setSidebarWidth,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, toggleSidebar],
+    [
+      state,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      sidebarWidth,
+      toggleSidebar,
+    ],
   )
 
   return (
@@ -143,7 +163,7 @@ function SidebarProvider({
           data-slot="sidebar-wrapper"
           style={
             {
-              "--sidebar-width": SIDEBAR_WIDTH,
+              "--sidebar-width": `${sidebarWidth}px`,
               "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
               ...style,
             } as React.CSSProperties
@@ -290,8 +310,67 @@ function SidebarTrigger({
   )
 }
 
-function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
-  const { toggleSidebar } = useSidebar()
+function SidebarRail({
+  className,
+  onClick,
+  onPointerDown,
+  ...props
+}: React.ComponentProps<"button">) {
+  const { setOpen, setSidebarWidth, toggleSidebar } = useSidebar()
+  const hasDraggedRef = React.useRef(false)
+
+  // 拖曳 Sidebar 邊緣調整桌面寬度
+  const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
+    onPointerDown?.(event)
+    if (event.defaultPrevented) return
+    if (event.button !== 0) return
+
+    const sidebarRoot = event.currentTarget.closest(
+      '[data-slot="sidebar"]',
+    ) as HTMLElement | null
+    const side = sidebarRoot?.dataset.side === "right" ? "right" : "left"
+    const startX = event.clientX
+
+    hasDraggedRef.current = false
+    event.currentTarget.setPointerCapture(event.pointerId)
+
+    // 依滑鼠位置更新 Sidebar 寬度
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      const delta = Math.abs(moveEvent.clientX - startX)
+      const nextWidth =
+        side === "left"
+          ? clampSidebarWidth(moveEvent.clientX)
+          : clampSidebarWidth(window.innerWidth - moveEvent.clientX)
+
+      if (delta > 2) {
+        hasDraggedRef.current = true
+        setOpen(true)
+        setSidebarWidth(nextWidth)
+      }
+    }
+
+    // 結束拖曳並清除全域事件
+    const handlePointerUp = () => {
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerUp)
+    }
+
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerup", handlePointerUp)
+  }
+
+  // 點擊邊緣時保留原本收合行為
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event)
+    if (event.defaultPrevented) return
+
+    if (hasDraggedRef.current) {
+      hasDraggedRef.current = false
+      return
+    }
+
+    toggleSidebar()
+  }
 
   return (
     <button
@@ -299,7 +378,8 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       data-slot="sidebar-rail"
       aria-label="Toggle Sidebar"
       tabIndex={-1}
-      onClick={toggleSidebar}
+      onClick={handleClick}
+      onPointerDown={handlePointerDown}
       title="Toggle Sidebar"
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
