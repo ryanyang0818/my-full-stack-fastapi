@@ -106,9 +106,20 @@ test.describe("Admin user management", () => {
     await page.getByPlaceholder("Email").fill(email)
     await page.getByPlaceholder("Password").first().fill(password)
     await page.getByPlaceholder("Password").last().fill(password)
-    await page.getByRole("button", { name: "Save" }).click()
 
-    await expect(page.getByText("User created successfully")).toBeVisible()
+    const createUserResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes("/api/v1/users/") &&
+        response.request().method() === "POST" &&
+        response.ok(),
+    )
+
+    await page.getByRole("button", { name: "Save" }).click()
+    await createUserResponse
+
+    await expect(page.getByText("User created successfully")).toBeVisible({
+      timeout: 10000,
+    })
 
     await expect(page.getByRole("dialog")).not.toBeVisible()
 

@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
 import { getInitials } from "@/utils"
+import dodoIcon from "/assets/images/dodo-icon-light.svg"
 import { useHeaderVisibility } from "./header-visibility"
 
 const departmentTabs = ["採購", "銷售", "庫存", "財務", "人資", "製造", "報表"]
@@ -24,9 +25,11 @@ export function UserHeader() {
     >
       <SidebarTrigger className="size-8 shrink-0 text-slate-600 hover:bg-slate-100 hover:text-slate-950" />
       <div className="flex h-full shrink-0 items-center gap-2.5 border-r border-slate-200 pr-5">
-        <div className="grid size-[30px] place-items-center rounded bg-blue-600 text-base font-bold text-white">
-          D
-        </div>
+        <img
+          src={dodoIcon}
+          alt="DoDo ERP"
+          className="size-[30px] rounded"
+        />
         <div className="min-w-0 leading-tight">
           <div className="font-semibold text-slate-950">DoDo ERP</div>
           <div className="font-mono text-[10px] text-slate-500">
