@@ -76,17 +76,23 @@ function TestTab2() {
           <TabsList className="mb-3 h-auto -space-x-px bg-background p-0 shadow-sm shadow-black/5 rtl:space-x-reverse">
             {openTabs.map((tab, index) => {
               const Icon = tab.icon
+              const isActive = activeTab === tab.value
 
               return (
-                <div key={tab.value} className="flex shrink-0 items-stretch">
+                <div
+                  key={tab.value}
+                  className={cn(
+                    "relative flex shrink-0 items-stretch overflow-hidden rounded-md border border-border bg-background text-muted-foreground transition-colors after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5",
+                    isActive &&
+                      "bg-muted text-foreground after:bg-primary shadow-sm shadow-black/5"
+                  )}
+                >
                   <TabsTrigger
                     value={tab.value}
                     className={cn(
-                      "relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-muted data-[state=active]:after:bg-primary",
-                      index === 0 && "rounded-s",
-                      index === openTabs.length - 1 &&
-                        !tab.closable &&
-                        "rounded-e"
+                      "relative rounded-none border-0 bg-transparent py-2 text-inherit shadow-none after:hidden hover:text-inherit data-[state=active]:bg-transparent data-[state=active]:text-inherit data-[state=active]:shadow-none",
+                      tab.closable ? "pe-2" : "pe-3",
+                      index === 0 && "rounded-s"
                     )}
                   >
                     <Icon
@@ -102,10 +108,7 @@ function TestTab2() {
                       type="button"
                       aria-label={`Close ${tab.title}`}
                       onClick={() => closeTab(tab.value)}
-                      className={cn(
-                        "inline-flex w-8 items-center justify-center border border-l-0 border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        index === openTabs.length - 1 && "rounded-e"
-                      )}
+                      className="my-1 me-1 inline-flex size-6 items-center justify-center rounded-sm border-l border-border/80 text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       <X className="size-3.5" aria-hidden="true" />
                     </button>
