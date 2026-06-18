@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { Briefcase, Home, LayoutDashboard, Users } from "lucide-react"
+import { useState } from "react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
 import {
@@ -29,9 +29,14 @@ export function AppSidebar() {
     ? [
         ...baseItems,
         { icon: Users, title: "Admin", path: "/admin" },
+        { icon: LayoutDashboard, title: "TestTab2", path: "/test-tab2" },
         { icon: LayoutDashboard, title: "TestTab", path: "/test-tab" },
       ]
-    : [...baseItems, { icon: LayoutDashboard, title: "TestTab", path: "/test-tab" }]
+    : [
+        ...baseItems,
+        { icon: LayoutDashboard, title: "TestTab2", path: "/test-tab2" },
+        { icon: LayoutDashboard, title: "TestTab", path: "/test-tab" },
+      ]
 
   return (
     <Sidebar

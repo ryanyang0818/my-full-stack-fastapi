@@ -15,6 +15,7 @@ import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutTestTab2RouteImport } from './routes/_layout/test-tab2'
 import { Route as LayoutTestTabRouteImport } from './routes/_layout/test-tab'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
@@ -49,6 +50,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutTestTab2Route = LayoutTestTab2RouteImport.update({
+  id: '/test-tab2',
+  path: '/test-tab2',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutTestTabRoute = LayoutTestTabRouteImport.update({
   id: '/test-tab',
   path: '/test-tab',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
   '/test-tab': typeof LayoutTestTabRoute
+  '/test-tab2': typeof LayoutTestTab2Route
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
   '/test-tab': typeof LayoutTestTabRoute
+  '/test-tab2': typeof LayoutTestTab2Route
   '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/_layout/items': typeof LayoutItemsRoute
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/test-tab': typeof LayoutTestTabRoute
+  '/_layout/test-tab2': typeof LayoutTestTab2Route
   '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/items'
     | '/settings'
     | '/test-tab'
+    | '/test-tab2'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/items'
     | '/settings'
     | '/test-tab'
+    | '/test-tab2'
     | '/'
   id:
     | '__root__'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/_layout/items'
     | '/_layout/settings'
     | '/_layout/test-tab'
+    | '/_layout/test-tab2'
     | '/_layout/'
   fileRoutesById: FileRoutesById
 }
@@ -194,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/test-tab2': {
+      id: '/_layout/test-tab2'
+      path: '/test-tab2'
+      fullPath: '/test-tab2'
+      preLoaderRoute: typeof LayoutTestTab2RouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/test-tab': {
       id: '/_layout/test-tab'
       path: '/test-tab'
@@ -230,6 +249,7 @@ interface LayoutRouteChildren {
   LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutTestTabRoute: typeof LayoutTestTabRoute
+  LayoutTestTab2Route: typeof LayoutTestTab2Route
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
@@ -238,6 +258,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutItemsRoute: LayoutItemsRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutTestTabRoute: LayoutTestTabRoute,
+  LayoutTestTab2Route: LayoutTestTab2Route,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 
