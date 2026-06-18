@@ -46,5 +46,5 @@
 - 修改前先讀現有實作與相鄰檔案。
 - 優先用既有專案模式、Tailwind、shadcn/ui 與 lucide-react。
 - 不覆蓋或回復使用者既有修改。
-- commit 前必須先跑測試。
+- commit 前詢問是否測試。
 - GIT msg敘述的部分使用中文。技術名詞使用英文。
