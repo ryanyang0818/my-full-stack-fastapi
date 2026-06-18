@@ -14,6 +14,7 @@ import {
 import { useHeaderVisibility } from "./header-visibility"
 
 const revealDelayMs = 300
+const discoveryHintStorageKey = "dodo-app-menu-discovery-hint-dismissed"
 
 type AppMenuEntry =
   | {
@@ -174,6 +175,7 @@ export function AppMenuBar() {
   const { appMenuVisible } = useHeaderVisibility()
   const [temporarilyVisible, setTemporarilyVisible] = useState(false)
   const [openMenuLabel, setOpenMenuLabel] = useState<string | null>(null)
+  const [showDiscoveryHint, setShowDiscoveryHint] = useState(false)
   const appHeaderRef = useRef<HTMLDivElement | null>(null)
   const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -185,14 +187,21 @@ export function AppMenuBar() {
     }
   }, [])
 
+  // 關閉首次功能選單提示並記錄狀態
+  const dismissDiscoveryHint = useCallback(() => {
+    setShowDiscoveryHint(false)
+    window.localStorage.setItem(discoveryHintStorageKey, "true")
+  }, [])
+
   // 由畫面頂端感應區暫時喚回功能列
   const revealTemporarily = useCallback(() => {
     cancelReveal()
+    dismissDiscoveryHint()
     revealTimerRef.current = setTimeout(() => {
       setTemporarilyVisible(true)
       revealTimerRef.current = null
     }, revealDelayMs)
-  }, [cancelReveal])
+  }, [cancelReveal, dismissDiscoveryHint])
 
   // 收起暫時顯示的 AppMenuBar
   const hideTemporaryMenu = useCallback(() => {
@@ -229,6 +238,12 @@ export function AppMenuBar() {
       document.removeEventListener("pointerdown", handlePointerDown)
     }
   }, [appMenuVisible, hideTemporaryMenu, temporarilyVisible])
+
+  useEffect(() => {
+    const dismissed = window.localStorage.getItem(discoveryHintStorageKey)
+
+    setShowDiscoveryHint(dismissed !== "true")
+  }, [])
 
   const menuContent = (
     <nav aria-label="應用程式功能選單">
@@ -275,11 +290,35 @@ export function AppMenuBar() {
     return (
       <>
         <div
-          className="fixed inset-x-0 top-0 z-30 hidden h-1 md:block"
+          className="fixed inset-x-0 top-0 z-30 hidden h-3 md:block"
           onMouseEnter={revealTemporarily}
           onMouseLeave={cancelReveal}
           aria-hidden="true"
-        />
+        >
+          <span className="absolute left-1/2 top-0 -translate-x-1/2 text-[10px] leading-none text-slate-400">
+            ▾
+          </span>
+        </div>
+        {showDiscoveryHint && !temporarilyVisible && (
+          <div className="fixed left-1/2 top-3 z-30 hidden -translate-x-1/2 animate-[wiggle_1.8s_ease-in-out_infinite] items-center gap-2 rounded border border-orange-300 bg-orange-50 px-2.5 py-1.5 text-xs text-orange-900 shadow-sm shadow-orange-200/70 md:flex [&]:[animation-delay:600ms]">
+            <style>
+              {`@keyframes wiggle {
+                0%, 100% { transform: translateX(-50%); }
+                8% { transform: translateX(calc(-50% - 2px)); }
+                16% { transform: translateX(calc(-50% + 2px)); }
+                24% { transform: translateX(-50%); }
+              }`}
+            </style>
+            <span className="font-medium">滑過上緣開啟功能選單</span>
+            <button
+              type="button"
+              className="rounded px-1 text-[11px] text-orange-700 transition-colors hover:bg-orange-100 hover:text-orange-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+              onClick={dismissDiscoveryHint}
+            >
+              知道了
+            </button>
+          </div>
+        )}
         {temporarilyVisible && (
           <div
             ref={appHeaderRef}
