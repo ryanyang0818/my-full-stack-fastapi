@@ -30,6 +30,7 @@ openapi.json
 /.playwright-mcp/
 /playwright/.cache/
 /playwright/.auth/
+/.tanstack/
 
 # Local Claude/Codex files
 /.claude/

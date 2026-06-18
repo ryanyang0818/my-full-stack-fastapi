@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tab Header 架構研究紀錄</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --muted: #64748b;
+      --primary: #3b82f6;
+      --primary-light: #eff6ff;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --yellow: #f59e0b;
+      --yellow-light: #fffbeb;
+      --code-bg: #f1f5f9;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .doc-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .doc-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .meta-item strong {
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* TOC */
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .toc h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .toc ol {
+      padding-left: 1.25rem;
+    }
+
+    .toc li {
+      margin-bottom: 0.3rem;
+    }
+
+    .toc a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .toc a:hover { text-decoration: underline; }
+
+    /* Sections */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section h2 .num {
+      background: var(--primary);
+      color: white;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 1.25rem 0 0.75rem;
+    }
+
+    p { margin-bottom: 0.75rem; color: var(--text); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    thead th {
+      background: var(--code-bg);
+      padding: 0.6rem 0.875rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    tbody td {
+      padding: 0.6rem 0.875rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg); }
+
+    /* Code */
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin: 0.75rem 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    p code, li code, td code {
+      background: var(--code-bg);
+      color: #c026d3;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    /* Callout */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+    }
+
+    .callout.green {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .callout.yellow {
+      border-color: var(--yellow);
+      background: var(--yellow-light);
+    }
+
+    .callout blockquote {
+      font-style: italic;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    /* Arch diagram */
+    .arch {
+      background: #1e293b;
+      color: #94a3b8;
+      font-family: monospace;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      line-height: 1.8;
+      margin: 0.75rem 0;
+    }
+
+    .arch .hl { color: #38bdf8; }
+    .arch .active { color: #4ade80; }
+    .arch .muted { color: #475569; }
+
+    /* Checklist */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      padding: 0.35rem 0;
+      padding-left: 1.75rem;
+      position: relative;
+      font-size: 0.9rem;
+    }
+    .checklist li::before {
+      content: '☐';
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+
+    /* Comparison cards */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .compare-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .compare-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* OK / NG tags */
+    .ok { color: var(--green); font-weight: 600; }
+    .ng { color: var(--red); font-weight: 600; }
+
+    /* Tag */
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .tag-blue { background: var(--primary-light); color: var(--primary); }
+    .tag-green { background: var(--green-light); color: var(--green); }
+    .tag-yellow { background: var(--yellow-light); color: var(--yellow); }
+
+    @media (max-width: 600px) {
+      .compare-grid { grid-template-columns: 1fr; }
+      .meta-row { gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>Tab Header 架構研究紀錄</h1>
+    <div class="meta-row">
+      <div class="meta-item"><strong>日期：</strong>2026-06-18</div>
+      <div class="meta-item"><strong>作者：</strong>Claude Sonnet 4.6</div>
+      <div class="meta-item"><span class="badge">研究完成，待實作</span></div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>目錄</h2>
+    <ol>
+      <li><a href="#s1">問題起源</a></li>
+      <li><a href="#s2">兩種架構的根本差異</a></li>
+      <li><a href="#s3">架構決策</a></li>
+      <li><a href="#s4">參考實作分析</a></li>
+      <li><a href="#s5">兩種實作方式完整對比</a></li>
+      <li><a href="#s6">使用者最終偏好方向</a></li>
+      <li><a href="#s7">核心技術問題：如何保留頁面狀態</a></li>
+      <li><a href="#s8">更新後的實作計畫</a></li>
+      <li><a href="#s9">待釐清事項</a></li>
+    </ol>
+  </div>
+
+  <!-- S1 -->
+  <div class="section" id="s1">
+    <h2><span class="num">1</span> 問題起源</h2>
+    <p>在 <code>/test-tab</code> 頁面實作 <code>ClosableTabs</code> 元件後，發現頁籤系統作為「單一頁面的元件」有根本上的局限性：</p>
+    <ul style="padding-left:1.5rem; margin-bottom:0.75rem;">
+      <li>AppMenuBar、UserHeader、Sidebar 是 Layout 層的持久元素，不受路由切換影響</li>
+      <li>但 ClosableTabs 只存在於特定路由，無法跨頁面持久存在</li>
+    </ul>
+    <div class="callout">
+      <blockquote>「我的 Tab 是不是也應該變成一種 Tab Header，而不是把它當作單一頁面的元件來使用？」</blockquote>
+    </div>
+    <p>這個問題引發了架構層面的重要討論。</p>
+  </div>
+
+  <!-- S2 -->
+  <div class="section" id="s2">
+    <h2><span class="num">2</span> 兩種架構的根本差異</h2>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>架構 A — Tab 作為頁面元件（現況）</h4>
+        <div class="arch">
+Layout<br>
+├── AppMenuBar<br>
+├── UserHeader<br>
+├── Sidebar<br>
+└── MainContent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── &lt;Outlet /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="hl">TestTab</span> ← 只存在於 /test-tab
+        </div>
+      </div>
+      <div class="compare-card">
+        <h4>架構 B — Tab 作為 Layout Header（目標）</h4>
+        <div class="arch">
+Layout<br>
+├── AppMenuBar<br>
+├── UserHeader<br>
+├── Sidebar<br>
+├── <span class="hl">TabHeader</span> ← 持久（新層級）<br>
+└── MainContent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── &lt;DashboardPage hidden /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="active">&lt;AdminPage /&gt;</span> ← active<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── &lt;ItemsPage hidden /&gt;
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>面向</th><th>架構 A（頁面元件）</th><th>架構 B（Layout Header）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>頁籤何時存在</td><td>只在特定路由</td><td>全程持久</td></tr>
+        <tr><td>點選 Sidebar</td><td>整頁換內容</td><td>開新頁籤</td></tr>
+        <tr><td>對應的產品</td><td>一般 SPA 頁面</td><td>IDE、ERP 多文件介面</td></tr>
+        <tr><td>適用情境</td><td>設定頁分頁、表單分區</td><td>多文件並存、ERP 作業流</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- S3 -->
+  <div class="section" id="s3">
+    <h2><span class="num">3</span> 架構決策</h2>
+    <table>
+      <thead>
+        <tr><th>決策項目</th><th>決定</th><th>理由</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>URL 是否反映頁籤</td><td><span class="tag tag-yellow">否</span></td><td>頁籤切來切去反映 URL 太麻煩</td></tr>
+        <tr><td>點擊 Sidebar 行為</td><td><span class="tag tag-blue">開新頁籤</span></td><td>頁籤系統主導導航</td></tr>
+        <tr><td>同一頁面開兩個頁籤</td><td><span class="tag tag-yellow">暫不討論</span></td><td>後續再定義</td></tr>
+        <tr><td>與頁籤無關的功能</td><td><span class="tag tag-blue">走路由</span></td><td>例如登入頁、外部連結</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- S4 -->
+  <div class="section" id="s4">
+    <h2><span class="num">4</span> 參考實作分析</h2>
+    <p><strong>來源：</strong><code>R:\001.工作日誌\06-w25\react-antd-multi-tabs-admin</code><br>
+    <strong>核心元件：</strong><code>src/components/common/tabPanes/index.tsx</code><br>
+    <strong>架構方式：</strong>路由主導（Router-driven）</p>
+
+    <h3>4.1 運作流程</h3>
+    <div class="arch">
+使用者點 Sidebar<br>
+&nbsp;&nbsp;→ <span class="hl">history.push('/admin')</span>          ← URL 改變<br>
+&nbsp;&nbsp;→ container/index.tsx 偵測 useLocation()<br>
+&nbsp;&nbsp;→ <span class="hl">getKeyName(pathname)</span> 查元件<br>
+&nbsp;&nbsp;→ setPanesItem() 通知 TabPanes<br>
+&nbsp;&nbsp;→ TabPanes 新增頁籤並渲染
+    </div>
+
+    <h3>4.2 關鍵設計：<code>getKeyName(path)</code></h3>
+    <p>Store 只存路徑字串，不存元件。需要渲染時才動態查找：</p>
+    <pre><code>export const getKeyName = (path: string) => {
+  const curRoute = flattenRoutes(routes).filter(
+    item => item.path.includes(path)
+  )
+  const { name, key, component } = curRoute[0]
+  return { title: name, tabKey: key, component }
+}</code></pre>
+    <p>✅ <strong>優點：</strong>元件不被序列化進 store，路由設定是唯一真實來源。</p>
+
+    <h3>4.3 狀態保留機制</h3>
+    <pre><code>&lt;Tabs
+  // destroyInactiveTabPane   ← 這行被「註解掉」= false
+&gt;
+  {panes.map(pane =&gt; (
+    &lt;TabPane key={pane.key}&gt;
+      &lt;pane.content /&gt;   ← 全部同時在 DOM，非 active 的被 CSS 隱藏
+    &lt;/TabPane&gt;
+  ))}
+&lt;/Tabs&gt;</code></pre>
+
+    <h3>4.4 Redux 狀態（只存路徑）</h3>
+    <pre><code>{
+  curTab: ['/home', '/admin', '/items'],  // 開著哪些頁籤
+  reloadPath: 'null'                      // 需要刷新的路徑
+}</code></pre>
+
+    <h3>4.5 額外功能</h3>
+    <table>
+      <thead><tr><th>功能</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>右鍵選單</td><td>重新整理、關閉、關閉其他、全部關閉</td></tr>
+        <tr><td>刷新機制</td><td>設定 reloadPath，該頁籤暫時顯示「刷新中...」</td></tr>
+        <tr><td>路由過濾</td><td><code>noNewTab: ['/login']</code> 不開新頁籤；<code>noCheckAuth: ['/403']</code> 不檢查權限</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- S5 -->
+  <div class="section" id="s5">
+    <h2><span class="num">5</span> 兩種實作方式完整對比</h2>
+    <table>
+      <thead>
+        <tr><th>面向</th><th>參考實作（他）</th><th>我們的計畫</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>主控者</strong></td><td>Router（URL 驅動）</td><td>Zustand Store（直接驅動）</td></tr>
+        <tr><td><strong>URL 變化</strong></td><td>是（history.push）</td><td>否</td></tr>
+        <tr><td><strong>元件查找</strong></td><td><code>getKeyName(path)</code> 動態查路由設定</td><td>Sidebar item 直接綁定 component</td></tr>
+        <tr><td><strong>頁籤 UI</strong></td><td>Ant Design Tabs</td><td>我們的 ClosableTabs</td></tr>
+        <tr><td><strong>非 active 處理</strong></td><td>Ant Design 內建 show/hide</td><td>我們自己用 <code>hidden</code> class</td></tr>
+        <tr><td><strong>狀態管理</strong></td><td>Redux Toolkit</td><td>Zustand</td></tr>
+        <tr><td><strong>權限守衛</strong></td><td>URL 變化觸發 checkAuth()</td><td>需要另外處理</td></tr>
+        <tr><td><strong>頁面定義</strong></td><td>頁面仍是路由元件（共用）</td><td>需抽出為獨立元件</td></tr>
+        <tr><td><strong>持久化</strong></td><td>Redux Persist（可跨重整）</td><td>未計畫</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- S6 -->
+  <div class="section" id="s6">
+    <h2><span class="num">6</span> 使用者最終偏好方向</h2>
+    <div class="callout green">
+      <blockquote>「我比較喜歡對方的設計。我希望讓頁面維持是頁面，但是在點擊頁面的過程中，我們會去偵測路由，然後藉由這個路由的狀態去製造 Tab。」</blockquote>
+    </div>
+    <p><strong>採用方向：路由主導（Router-driven）</strong></p>
+    <ul style="padding-left:1.5rem;">
+      <li>頁面維持是路由頁面，不需要抽出為獨立元件</li>
+      <li>偵測路由變化 → 自動建立/切換頁籤</li>
+      <li>路由設定檔是元件的唯一來源</li>
+    </ul>
+  </div>
+
+  <!-- S7 -->
+  <div class="section" id="s7">
+    <h2><span class="num">7</span> 核心技術問題：如何保留頁面狀態</h2>
+
+    <h3>問題</h3>
+    <p>當頁籤切換時，暫時不顯示的頁面內容，狀態是否會消失？</p>
+
+    <h3>答案：使用 CSS 隱藏，而非條件渲染</h3>
+
+    <pre><code>// ❌ 這樣會消失 — 每次切換都 unmount/remount，state 歸零
+{activeTab === 'admin' &amp;&amp; &lt;AdminPage /&gt;}
+
+// ✅ 這樣不會消失 — 全部都在 DOM，state 永遠保留
+&lt;div hidden={activeTab !== 'admin'}&gt;&lt;AdminPage /&gt;&lt;/div&gt;
+&lt;div hidden={activeTab !== 'items'}&gt;&lt;ItemsPage /&gt;&lt;/div&gt;</code></pre>
+
+    <table>
+      <thead>
+        <tr><th>情況</th><th>React state</th><th>API 資料（React Query）</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>hidden</code> 隱藏（未 unmount）</td>
+          <td><span class="ok">✅ 保留</span></td>
+          <td><span class="ok">✅ 快取保留</span></td>
+        </tr>
+        <tr>
+          <td>條件渲染移除（unmount）</td>
+          <td><span class="ng">❌ 消失</span></td>
+          <td><span class="ok">✅ 快取保留（React Query）</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout green">
+      <blockquote><strong>結論：只要用 <code>hidden</code> 而非條件渲染，React state 從來沒消失過，不需要「恢復」。</strong></blockquote>
+    </div>
+  </div>
+
+  <!-- S8 -->
+  <div class="section" id="s8">
+    <h2><span class="num">8</span> 更新後的實作計畫</h2>
+
+    <h3>Phase 1：安裝依賴</h3>
+    <ul class="checklist">
+      <li>安裝 Zustand：<code>bun add zustand</code></li>
+    </ul>
+
+    <h3>Phase 2：建立 Tab Store（路由主導版）</h3>
+    <pre><code>type TabItem = {
+  id: string          // 對應路由 path
+  title: string
+  icon: LucideIcon
+  closable: boolean
+}
+
+type TabStore = {
+  tabs: TabItem[]
+  activeTab: string
+  openOrFocusTab: (tab: TabItem) => void  // 已存在則只切換
+  closeTab: (id: string) => void
+  setActiveTab: (id: string) => void
+}</code></pre>
+
+    <h3>Phase 3：路由對應表</h3>
+    <p>建立 <code>src/lib/routeTabMap.ts</code>，定義路由 → 頁籤資訊的對應：</p>
+    <pre><code>const routeTabMap = {
+  '/':      { title: 'Dashboard', icon: Home,      closable: false },
+  '/admin': { title: 'Admin',     icon: Users,     closable: true  },
+  '/items': { title: 'Items',     icon: Briefcase, closable: true  },
+}</code></pre>
+
+    <h3>Phase 4：改造 Layout</h3>
+    <ul class="checklist">
+      <li><code>_layout.tsx</code> 偵測路由變化 → 呼叫 <code>openOrFocusTab()</code></li>
+      <li>加入 TabHeader（ClosableTabs bar，從 store 讀取）</li>
+      <li>MainContent 渲染所有路由元件，用 <code>hidden</code> 切換</li>
+    </ul>
+
+    <h3>Phase 5：改造 ClosableTabs 為受控元件</h3>
+    <ul class="checklist">
+      <li>移除內部 <code>useState</code>，改為 props 驅動</li>
+      <li>連接 Zustand store</li>
+    </ul>
+
+    <h3>Phase 6：Sidebar 調整（可選）</h3>
+    <ul class="checklist">
+      <li>Sidebar 仍用 RouterLink（URL 改變 → 自動觸發 Phase 4 的偵測）</li>
+    </ul>
+
+    <h3>影響檔案總覽</h3>
+    <table>
+      <thead>
+        <tr><th>檔案</th><th>變更類型</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>src/store/tabStore.ts</code></td><td><span class="tag tag-green">新增</span></td><td>Zustand tab 狀態管理</td></tr>
+        <tr><td><code>src/lib/routeTabMap.ts</code></td><td><span class="tag tag-green">新增</span></td><td>路由 → 頁籤資訊對應表</td></tr>
+        <tr><td><code>src/components/Common/ClosableTabs.tsx</code></td><td><span class="tag tag-blue">修改</span></td><td>改為受控元件（props 驅動）</td></tr>
+        <tr><td><code>src/routes/_layout.tsx</code></td><td><span class="tag tag-blue">修改</span></td><td>加入 TabHeader、改造 MainContent</td></tr>
+        <tr><td><code>src/components/Sidebar/Main.tsx</code></td><td><span class="tag tag-blue">修改</span></td><td>RouterLink 觸發路由，路由偵測負責開頁籤</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- S9 -->
+  <div class="section" id="s9">
+    <h2><span class="num">9</span> 待釐清事項</h2>
+    <table>
+      <thead>
+        <tr><th>問題</th><th>狀態</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>同一頁面可以開兩個頁籤嗎？</td><td><span class="tag tag-yellow">暫緩</span></td></tr>
+        <tr><td>Settings 頁面是否納入頁籤系統？</td><td><span class="tag tag-yellow">暫緩</span></td></tr>
+        <tr><td>頁籤是否需要跨重整持久化？</td><td><span class="tag tag-yellow">未定</span></td></tr>
+        <tr><td>路由 <code>beforeLoad</code> 守衛與頁籤系統的協作</td><td><span class="tag tag-yellow">需設計</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="text-align:center; color: var(--muted); font-size:0.8rem; padding: 2rem 0;">
+    Generated by Claude Sonnet 4.6 · 2026-06-18
+  </div>
+
+</div>
+</body>
+</html>
