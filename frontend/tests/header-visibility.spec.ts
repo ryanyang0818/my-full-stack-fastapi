@@ -86,6 +86,70 @@ test("toggleAppMenu() 切換 AppMenuBar 顯示狀態", async ({ page }) => {
     .toBe(false)
 })
 
+// 驗證 hover 主選單會展開 dropdown
+test("AppMenuBar hover 主選單會展開 dropdown", async ({ page }) => {
+  const appMenu = page.getByRole("navigation", {
+    name: "應用程式功能選單",
+  })
+
+  await page.evaluate(() => window.headerControls?.showAppMenu())
+  await expect(appMenu).toBeVisible()
+
+  await page.getByRole("button", { name: "檔案" }).hover()
+
+  await expect(page.getByRole("menuitem", { name: /新增/ })).toBeVisible()
+  await expect(page.getByRole("button", { name: "說明" })).toBeVisible()
+})
+
+// 驗證 hover 說明主選單會展開下拉內容
+test("AppMenuBar hover 說明會展開使用說明", async ({ page }) => {
+  const appMenu = page.getByRole("navigation", {
+    name: "應用程式功能選單",
+  })
+
+  await page.evaluate(() => window.headerControls?.showAppMenu())
+  await expect(appMenu).toBeVisible()
+
+  await page.getByRole("button", { name: "說明" }).hover()
+
+  await expect(page.getByRole("menuitem", { name: /使用說明/ })).toBeVisible()
+})
+
+// 驗證暫時顯示後滑鼠離開不會自動消失
+test("AppMenuBar 暫時顯示後滑鼠離開仍維持可見", async ({ page }) => {
+  const appMenu = page.getByRole("navigation", {
+    name: "應用程式功能選單",
+  })
+
+  await page.evaluate(() => window.headerControls?.hideAppMenu())
+  await expect(appMenu).toBeHidden()
+
+  await page.mouse.move(20, 1)
+  await expect(appMenu).toBeVisible()
+
+  await page.mouse.move(500, 300)
+  await page.waitForTimeout(800)
+
+  await expect(appMenu).toBeVisible()
+})
+
+// 驗證暫時顯示的功能選單只會在點擊外部時關閉
+test("AppMenuBar 暫時顯示後點擊外部才關閉", async ({ page }) => {
+  const appMenu = page.getByRole("navigation", {
+    name: "應用程式功能選單",
+  })
+
+  await page.evaluate(() => window.headerControls?.hideAppMenu())
+  await expect(appMenu).toBeHidden()
+
+  await page.mouse.move(20, 1)
+  await expect(appMenu).toBeVisible()
+
+  await page.mouse.click(500, 300)
+
+  await expect(appMenu).toBeHidden()
+})
+
 // 驗證 hideUserHeader 能隱藏使用者標頭並更新狀態
 test("hideUserHeader() 隱藏 UserHeader", async ({ page }) => {
   const userHeader = page.getByText("DoDo ERP", { exact: true })
