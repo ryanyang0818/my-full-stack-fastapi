@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Briefcase, Home, Users } from "lucide-react"
+import { Briefcase, Home, LayoutDashboard, Users } from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
 import {
@@ -26,8 +26,12 @@ export function AppSidebar() {
   const [search, setSearch] = useState("")
 
   const items = currentUser?.is_superuser
-    ? [...baseItems, { icon: Users, title: "Admin", path: "/admin" }]
-    : baseItems
+    ? [
+        ...baseItems,
+        { icon: Users, title: "Admin", path: "/admin" },
+        { icon: LayoutDashboard, title: "TestTab", path: "/test-tab" },
+      ]
+    : [...baseItems, { icon: LayoutDashboard, title: "TestTab", path: "/test-tab" }]
 
   return (
     <Sidebar
