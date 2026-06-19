@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react'
-import { ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { ChevronRight } from "lucide-react"
+import { useMemo, useState } from "react"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,45 +9,62 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from '@/components/ui/sidebar'
+} from "@/components/ui/sidebar"
+import { useOpenTab } from "@/hooks/useOpenTab"
+import { cn } from "@/lib/utils"
+import { keyForPath } from "./tabKeyMap"
 import {
   filterTree,
   type TreeFolder,
   type TreeGroup,
   type TreeLeaf,
-} from './tree-data'
+} from "./tree-data"
 
 interface TreeMenuProps {
   data: TreeGroup[]
   search: string
 }
 
-// Lv3 葉節點
+// Lv3 葉節點：對應到 TabKey 才開頁籤，否則為禁用樣式（無 path 的佔位節點）
 function LeafItem({ leaf }: { leaf: TreeLeaf }) {
+  const openTab = useOpenTab()
+  const tabKey = keyForPath(leaf.path)
+  const disabled = !tabKey
+
   return (
     <SidebarMenuSubItem>
-      <SidebarMenuSubButton asChild size='sm'>
-        <a href={leaf.path ?? '#'} className='flex items-center gap-1.5'>
-          <leaf.icon className='h-3.5 w-3.5 shrink-0' />
-          <span className='flex-1 truncate'>{leaf.label}</span>
+      <SidebarMenuSubButton asChild size="sm">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => {
+            if (tabKey) openTab(tabKey)
+          }}
+          className={cn(
+            "flex w-full items-center gap-1.5 text-left",
+            disabled && "cursor-default opacity-70",
+          )}
+        >
+          <leaf.icon className="h-3.5 w-3.5 shrink-0" />
+          <span className="flex-1 truncate">{leaf.label}</span>
           {leaf.code && (
-            <span className='text-[10px] font-mono text-muted-foreground shrink-0'>
+            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
               {leaf.code}
             </span>
           )}
           {leaf.badge !== undefined && (
             <span
               className={cn(
-                'rounded px-1 text-[10px] font-medium shrink-0',
-                leaf.badgeVariant === 'warn'
-                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                  : 'bg-muted text-muted-foreground'
+                "rounded px-1 text-[10px] font-medium shrink-0",
+                leaf.badgeVariant === "warn"
+                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {leaf.badge}
             </span>
           )}
-        </a>
+        </button>
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>
   )
@@ -67,18 +83,18 @@ function FolderItem({
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        size='sm'
+        size="sm"
         onClick={() => setOpen((v) => !v)}
-        className='gap-1.5'
+        className="gap-1.5"
       >
         <ChevronRight
           className={cn(
-            'h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-150',
-            open && 'rotate-90'
+            "h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-150",
+            open && "rotate-90",
           )}
         />
-        <folder.icon className='h-3.5 w-3.5 shrink-0' />
-        <span className='flex-1 truncate'>{folder.label}</span>
+        <folder.icon className="h-3.5 w-3.5 shrink-0" />
+        <span className="flex-1 truncate">{folder.label}</span>
       </SidebarMenuButton>
       {open && folder.children.length > 0 && (
         <SidebarMenuSub>
@@ -106,23 +122,23 @@ function GroupItem({
       <SidebarMenuButton
         onClick={() => setOpen((v) => !v)}
         tooltip={group.label}
-        className='gap-1.5'
+        className="gap-1.5"
       >
         <ChevronRight
           className={cn(
-            'h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-150 group-data-[collapsible=icon]:hidden',
-            open && 'rotate-90'
+            "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-150 group-data-[collapsible=icon]:hidden",
+            open && "rotate-90",
           )}
         />
-        <group.icon className='h-4 w-4 shrink-0' />
-        <span className='flex-1 truncate font-medium'>{group.label}</span>
+        <group.icon className="h-4 w-4 shrink-0" />
+        <span className="flex-1 truncate font-medium">{group.label}</span>
         {group.badge !== undefined && (
           <span
             className={cn(
-              'rounded px-1.5 text-[10px] font-medium shrink-0',
-              group.badgeVariant === 'warn'
-                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                : 'bg-muted text-muted-foreground'
+              "rounded px-1.5 text-[10px] font-medium shrink-0",
+              group.badgeVariant === "warn"
+                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {group.badge}

@@ -8,6 +8,7 @@ import {
   type UserRegister,
   UsersService,
 } from "@/client"
+import { useTabStore } from "@/stores/tabStore"
 import { handleError } from "@/utils"
 import useCustomToast from "./useCustomToast"
 
@@ -48,6 +49,8 @@ const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
+      // 登入成功＝唯一重置點：清空頁籤（只剩固定 Dashboard），persist 會同步寫回 localStorage
+      useTabStore.getState().reset()
       navigate({ to: "/" })
     },
     onError: handleError.bind(showErrorToast),

@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Megaphone } from "lucide-react"
 
-import useAuth from "@/hooks/useAuth"
+import { TabHeaderController } from "@/components/TabHeader/TabHeaderController"
 
+// 首頁＝頁籤工作區：渲染固定 Dashboard 頁籤與其餘狀態驅動頁籤（內容脫離 Router）
 export const Route = createFileRoute("/_layout/")({
-  component: Dashboard,
+  component: TabHeaderController,
   head: () => ({
     meta: [
       {
@@ -13,33 +13,3 @@ export const Route = createFileRoute("/_layout/")({
     ],
   }),
 })
-
-// 顯示首頁公告與目前登入使用者的歡迎訊息
-function Dashboard() {
-  const { user: currentUser } = useAuth()
-
-  return (
-    <div className="space-y-6">
-      <section className="flex items-start gap-4 rounded-xl border border-primary/20 bg-primary/5 p-4 sm:p-5">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Megaphone className="size-5" aria-hidden="true" />
-        </div>
-        <div>
-          <h2 className="font-semibold text-foreground">歡迎使用管理平台</h2>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            你可以從左側選單開始管理 Items、帳號與個人設定。
-          </p>
-        </div>
-      </section>
-
-      <div>
-        <h1 className="max-w-sm truncate text-2xl">
-          Hello, {currentUser?.full_name || currentUser?.email} 👋
-        </h1>
-        <p className="text-muted-foreground">
-          Welcome back, nice to see you again!!!
-        </p>
-      </div>
-    </div>
-  )
-}
