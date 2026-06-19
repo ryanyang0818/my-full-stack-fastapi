@@ -1,0 +1,11 @@
+以下是你要的四項資訊:
+
+| # | 項目 | 內容 |
+|---|---|---|
+| 1 | **我是哪個 AI** | Claude Opus 4.8(model ID:`claude-opus-4-8`),以 Claude Code 形式運作 |
+| 2 | **Worktree 位置** | `R:\001.工作日誌\05-w23\my-full-stack-fastapi\frontend\.claude\worktrees\flamboyant-greider-bd87a9`(分支:`claude/flamboyant-greider-bd87a9`) |
+| 3 | **最後寫的文件** | `frontend/docs/重點流程文件/TabHeader-完整實作指南.md`(完整路徑:`<worktree>\frontend\docs\重點流程文件\TabHeader-完整實作指南.md`) |
+
+R:\001.工作日誌\05-w23\my-full-stack-fastapi\frontend\.claude\worktrees\flamboyant-greider-bd87a9\frontend\docs\重點流程文件\TabHeader-完整實作指南.md
+
+| 4 | **測試網址** | `http://localhost:5174/`(vite 預設 5173 被占用,自動漂到 5174;登入帳密 `admin@example.com` / `changethis`) |

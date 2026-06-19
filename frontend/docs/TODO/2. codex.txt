@@ -1,0 +1,11 @@
+AI 機器人：Codex，基於 GPT-5 的 coding agent
+
+work tree：
+C:\Users\sheep\.codex\worktrees\a4a3\my-full-stack-fastapi\frontend
+
+最後寫的文件：
+C:\Users\sheep\.codex\worktrees\a4a3\my-full-stack-fastapi\frontend\docs\重點流程文件\2026-06-19-TabHeader-keepalive-dnd-contextmenu-implementation.md
+
+測試網址：
+我沒有跑正式測試；瀏覽器互動確認使用的是
+http://127.0.0.1:5177/
