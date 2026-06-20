@@ -32,16 +32,18 @@ export function TabHeaderController() {
   )
 
   return (
-    <div className="flex flex-col">
-      <TabHeader
-        tabs={renderTabs}
-        activeId={activeId}
-        onSelect={setActive}
-        onClose={closeTab}
-        onCloseRight={closeRight}
-        onCloseAll={closeAll}
-        onReorder={reorder}
-      />
+    <div className="flex min-w-0 flex-col">
+      <div className="-mx-6 -mt-6 min-w-0 overflow-hidden md:-mx-8 md:-mt-8">
+        <TabHeader
+          tabs={renderTabs}
+          activeId={activeId}
+          onSelect={setActive}
+          onClose={closeTab}
+          onCloseRight={closeRight}
+          onCloseAll={closeAll}
+          onReorder={reorder}
+        />
+      </div>
       <div className="pt-4">
         <TabPageHost />
       </div>

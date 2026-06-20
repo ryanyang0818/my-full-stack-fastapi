@@ -69,7 +69,7 @@ export function TabHeader({
   }
 
   return (
-    <ScrollArea className="border-b border-border">
+    <ScrollArea className="w-full min-w-0 max-w-full overflow-hidden border-b border-border">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -79,7 +79,7 @@ export function TabHeader({
           items={tabs.map((t) => t.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex items-stretch gap-1 bg-background px-2 pt-1.5">
+          <div className="flex w-max min-w-full items-stretch gap-1 bg-background pl-1 pt-1">
             {tabs.map((tab) => (
               <SortableTab
                 key={tab.id}
@@ -141,7 +141,7 @@ function SortableTab({
           ref={setNodeRef}
           style={style}
           className={cn(
-            "relative flex shrink-0 items-stretch overflow-hidden rounded-t border border-border transition-colors",
+            "relative flex shrink-0 items-stretch overflow-hidden rounded-t-[10px] rounded-b-none border border-border transition-colors",
             isActive
               ? "bg-background border-border/60 shadow-sm"
               : "bg-muted hover:bg-muted/40",
@@ -159,7 +159,7 @@ function SortableTab({
             type="button"
             {...dragProps}
             onClick={() => onSelect(tab.id)}
-            className="flex items-center gap-1.5 px-3 pt-2.5 pb-2 text-sm"
+            className="flex items-center gap-1.5 px-1.5 pt-[5px] pb-2 text-sm"
           >
             <Icon
               className={cn(
@@ -184,7 +184,7 @@ function SortableTab({
                 e.stopPropagation()
                 onClose(tab.id)
               }}
-              className="flex items-center rounded-sm px-1 text-muted-foreground/40 hover:bg-black/10 hover:text-foreground"
+              className="my-auto mr-1 flex size-5 items-center justify-center rounded-sm text-muted-foreground/40 transition-colors hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`關閉 ${tab.title}`}
             >
               <X size={10} strokeWidth={2.5} />

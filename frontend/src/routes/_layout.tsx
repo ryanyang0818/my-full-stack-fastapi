@@ -62,7 +62,7 @@ function MainContentController({ children }: { children: ReactNode }) {
     <main
       ref={mainContentRef}
       data-dodo-section="mainContent"
-      className="flex-1 p-6 md:p-8"
+      className="min-w-0 flex-1 overflow-x-hidden p-6 md:p-8"
     >
       {children}
     </main>
@@ -105,7 +105,7 @@ function AuthenticatedLayout() {
       <AppSidebar />
       <SidebarInset className="pb-[var(--app-footer-layout-height)]">
         <MainContentController>
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto w-full min-w-0 max-w-7xl">
             <Outlet />
           </div>
         </MainContentController>

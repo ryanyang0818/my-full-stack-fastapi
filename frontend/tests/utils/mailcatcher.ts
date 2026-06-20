@@ -1,4 +1,4 @@
-import type { APIRequestContext } from "@playwright/test"
+import { expect, type APIRequestContext } from "@playwright/test"
 
 type Email = {
   id: number
@@ -30,33 +30,32 @@ async function findEmail({
   return null
 }
 
-export function findLastEmail({
+export async function findLastEmail({
   request,
   filter,
-  timeout = 5000,
+  timeout = 15000,
 }: {
   request: APIRequestContext
   filter?: (email: Email) => boolean
   timeout?: number
-}) {
-  const timeoutPromise = new Promise<never>((_, reject) =>
-    setTimeout(
-      () => reject(new Error("Timeout while trying to get latest email")),
-      timeout,
-    ),
-  )
+}): Promise<Email> {
+  let latestEmail: Email | null = null
+  const effectiveTimeout = Math.max(timeout, 15000)
 
-  const checkEmails = async () => {
-    while (true) {
-      const emailData = await findEmail({ request, filter })
+  // 等待 MailCatcher 實際收信，避免後端寄信稍慢時測試偶發 timeout
+  await expect
+    .poll(
+      async () => {
+        latestEmail = await findEmail({ request, filter })
+        return Boolean(latestEmail)
+      },
+      {
+        intervals: [250, 500, 1000],
+        message: "等待 MailCatcher 收到最新 email",
+        timeout: effectiveTimeout,
+      },
+    )
+    .toBe(true)
 
-      if (emailData) {
-        return emailData
-      }
-      // Wait for 100ms before checking again
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    }
-  }
-
-  return Promise.race([timeoutPromise, checkEmails()])
+  return latestEmail as Email
 }

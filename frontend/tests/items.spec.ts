@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test, type Page } from "@playwright/test"
 import { createUser } from "./utils/privateApi"
 import {
   randomEmail,
@@ -8,14 +8,26 @@ import {
 } from "./utils/random"
 import { logInUser } from "./utils/user"
 
+// 從登入後首頁開啟 Items 頁籤，取代已 redirect 的 /items route
+async function openItemsTab(page: Page) {
+  await page.goto("/")
+  const itemsMenuButton = page
+    .locator('[data-sidebar="menu-button"]')
+    .filter({ hasText: "Items" })
+  await expect(itemsMenuButton).toHaveCount(1)
+  await itemsMenuButton.click()
+  await expect(page).toHaveURL("/")
+  await expect(page.getByRole("heading", { name: "Items" })).toBeVisible()
+}
+
 test("Items page is accessible and shows correct title", async ({ page }) => {
-  await page.goto("/items")
+  await openItemsTab(page)
   await expect(page.getByRole("heading", { name: "Items" })).toBeVisible()
   await expect(page.getByText("Create and manage your items")).toBeVisible()
 })
 
 test("Add Item button is visible", async ({ page }) => {
-  await page.goto("/items")
+  await openItemsTab(page)
   await expect(page.getByRole("button", { name: "Add Item" })).toBeVisible()
 })
 
@@ -31,7 +43,7 @@ test.describe("Items management", () => {
 
   test.beforeEach(async ({ page }) => {
     await logInUser(page, email, password)
-    await page.goto("/items")
+    await openItemsTab(page)
   })
 
   test("Create a new item successfully", async ({ page }) => {
@@ -124,7 +136,7 @@ test.describe("Items empty state", () => {
     await createUser({ email, password })
     await logInUser(page, email, password)
 
-    await page.goto("/items")
+    await openItemsTab(page)
 
     await expect(page.getByText("You don't have any items yet")).toBeVisible()
     await expect(page.getByText("Add a new item to get started")).toBeVisible()
