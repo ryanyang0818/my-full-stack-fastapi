@@ -1,4 +1,9 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useRouterState,
+} from "@tanstack/react-router"
 import {
   type CSSProperties,
   type ReactNode,
@@ -73,6 +78,10 @@ function MainContentController({ children }: { children: ReactNode }) {
 function AuthenticatedLayout() {
   const { appMenuVisible, userHeaderVisible } = useHeaderVisibility()
   const [footerLayoutVisible, setFooterLayoutVisible] = useState(false)
+  // 首頁（頁籤工作區）的內容區不套 max-w-7xl，讓 Tab Header 能滿版貼齊邊緣
+  const isTabWorkspace = useRouterState({
+    select: (s) => s.location.pathname === "/",
+  })
   const appMenuLayoutHeight = appMenuVisible
     ? "var(--app-menu-bar-height)"
     : "0rem"
@@ -105,9 +114,13 @@ function AuthenticatedLayout() {
       <AppSidebar />
       <SidebarInset className="pb-[var(--app-footer-layout-height)]">
         <MainContentController>
-          <div className="mx-auto w-full min-w-0 max-w-7xl">
+          {isTabWorkspace ? (
             <Outlet />
-          </div>
+          ) : (
+            <div className="mx-auto w-full min-w-0 max-w-7xl">
+              <Outlet />
+            </div>
+          )}
         </MainContentController>
       </SidebarInset>
       <AppFooter onLayoutVisibilityChange={setFooterLayoutVisible} />

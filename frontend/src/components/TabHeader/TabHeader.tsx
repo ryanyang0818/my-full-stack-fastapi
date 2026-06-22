@@ -2,6 +2,7 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
+  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -26,6 +27,12 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { FIXED_TAB_ID } from "@/stores/tabStore"
 import type { TabKey } from "./types"
+
+// 拖曳排序時鎖定垂直位移，避免上下亂飄
+const restrictToHorizontalAxis: Modifier = ({ transform }) => ({
+  ...transform,
+  y: 0,
+})
 
 // Controller 注入的 render 形態：store 的 {id,key} 併入 tabRegistry 的 {title,icon}
 export type RenderTab = {
@@ -73,13 +80,15 @@ export function TabHeader({
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        modifiers={[restrictToHorizontalAxis]}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
           items={tabs.map((t) => t.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex w-max min-w-full items-stretch gap-1 bg-background pl-1 pt-1">
+          {/* 固定高度＝pt-1(4px) + active 頁籤外框高(35px)，避免 active/inactive 切換動畫時整列高度跳動 */}
+          <div className="flex h-[39px] w-max min-w-full items-end gap-1 bg-background pl-1 pt-1">
             {tabs.map((tab) => (
               <SortableTab
                 key={tab.id}
@@ -141,7 +150,7 @@ function SortableTab({
           ref={setNodeRef}
           style={style}
           className={cn(
-            "relative flex shrink-0 items-stretch overflow-hidden rounded-t-[10px] rounded-b-none border border-border transition-colors",
+            "relative flex shrink-0 items-stretch overflow-hidden rounded-t-[10px] rounded-b-none border border-border transition-all",
             isActive
               ? "bg-background border-border/60 shadow-sm"
               : "bg-muted hover:bg-muted/40",
@@ -159,12 +168,15 @@ function SortableTab({
             type="button"
             {...dragProps}
             onClick={() => onSelect(tab.id)}
-            className="flex items-center gap-1.5 px-1.5 pt-[5px] pb-2 text-sm"
+            className={cn(
+              "flex items-center gap-1.5 px-1.5 transition-all",
+              isActive ? "pt-[5px] pb-2 text-sm" : "py-1 text-xs",
+            )}
           >
             <Icon
               className={cn(
-                "size-4 transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground",
+                "shrink-0 transition-all",
+                isActive ? "size-4 text-primary" : "size-3.5 text-muted-foreground",
               )}
               strokeWidth={2}
               aria-hidden="true"
@@ -184,10 +196,13 @@ function SortableTab({
                 e.stopPropagation()
                 onClose(tab.id)
               }}
-              className="my-auto mr-1 flex size-5 items-center justify-center rounded-sm text-muted-foreground/40 transition-colors hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className={cn(
+                "my-auto mr-1 flex items-center justify-center rounded-sm text-muted-foreground/40 transition-all hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                isActive ? "size-5" : "size-4",
+              )}
               aria-label={`關閉 ${tab.title}`}
             >
-              <X size={10} strokeWidth={2.5} />
+              <X size={isActive ? 10 : 9} strokeWidth={2.5} />
             </button>
           )}
         </div>
