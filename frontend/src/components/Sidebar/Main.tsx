@@ -63,7 +63,7 @@ export function Main({ items }: MainProps) {
               )
             }
 
-            // 無對應 key → 維持原本路由頁連結（Admin / TestTab / TestTab2）
+            // 無對應 key → 維持原本路由頁連結（Admin）
             const isActive = currentPath === item.path
             return (
               <SidebarMenuItem key={item.title}>
