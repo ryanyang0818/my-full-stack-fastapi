@@ -15,7 +15,9 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import type { LucideIcon } from "lucide-react"
 import { X } from "lucide-react"
+import { useState } from "react"
 
+import { Button } from "@/components/ui/button"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -23,6 +25,15 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { FIXED_TAB_ID } from "@/stores/tabStore"
@@ -65,6 +76,8 @@ export function TabHeader({
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   )
+  // 待確認關閉的頁籤 id；非 null 時彈出 Dialog
+  const [pendingCloseId, setPendingCloseId] = useState<string | null>(null)
 
   // 拖曳結束：擋掉拖曳源為固定頁籤、以及落到固定頁籤之前的無效落點，其餘交回 store
   const handleDragEnd = (event: DragEndEvent) => {
@@ -74,6 +87,8 @@ export function TabHeader({
     if (over.id === FIXED_TAB_ID) return
     onReorder(String(active.id), String(over.id))
   }
+
+  const pendingCloseTab = tabs.find((t) => t.id === pendingCloseId)
 
   return (
     <ScrollArea className="w-full min-w-0 max-w-full overflow-hidden border-b border-border">
@@ -96,6 +111,7 @@ export function TabHeader({
                 isActive={tab.id === activeId}
                 onSelect={onSelect}
                 onClose={onClose}
+                onRequestClose={setPendingCloseId}
                 onCloseRight={onCloseRight}
                 onCloseAll={onCloseAll}
               />
@@ -104,6 +120,34 @@ export function TabHeader({
         </SortableContext>
       </DndContext>
       <ScrollBar orientation="horizontal" />
+
+      <Dialog
+        open={pendingCloseId !== null}
+        onOpenChange={(open) => !open && setPendingCloseId(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>關閉頁籤</DialogTitle>
+            <DialogDescription>
+              確定要關閉「{pendingCloseTab?.title}」嗎？
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">取消</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (pendingCloseId) onClose(pendingCloseId)
+                setPendingCloseId(null)
+              }}
+            >
+              確認關閉
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ScrollArea>
   )
 }
@@ -113,6 +157,7 @@ type SortableTabProps = {
   isActive: boolean
   onSelect: (id: string) => void
   onClose: (id: string) => void
+  onRequestClose: (id: string) => void
   onCloseRight: (id: string) => void
   onCloseAll: () => void
 }
@@ -123,21 +168,15 @@ function SortableTab({
   isActive,
   onSelect,
   onClose,
+  onRequestClose,
   onCloseRight,
   onCloseAll,
 }: SortableTabProps) {
   const isFixed = tab.id === FIXED_TAB_ID
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: tab.id, disabled: isFixed })
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useSortable({ id: tab.id, disabled: isFixed })
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
   }
   const Icon = tab.icon
   // 固定頁籤不掛拖曳 attributes/listeners，徹底擋住拖曳
@@ -149,8 +188,10 @@ function SortableTab({
         <div
           ref={setNodeRef}
           style={style}
+          data-tab-id={tab.id}
           className={cn(
-            "relative flex shrink-0 items-stretch overflow-hidden rounded-t-[10px] rounded-b-none border border-border transition-all",
+            "relative flex shrink-0 items-stretch overflow-hidden rounded-t-[10px] rounded-b-none border border-border",
+            isDragging ? "transition-none" : "transition-colors",
             isActive
               ? "bg-background border-border/60 shadow-sm"
               : "bg-muted hover:bg-muted/40",
@@ -169,13 +210,15 @@ function SortableTab({
             {...dragProps}
             onClick={() => onSelect(tab.id)}
             className={cn(
-              "flex items-center gap-1.5 px-1.5 transition-all",
+              "flex items-center gap-1.5 px-1.5",
+              isDragging ? "transition-none" : "transition-colors",
               isActive ? "pt-[5px] pb-2 text-sm" : "py-1 text-xs",
             )}
           >
             <Icon
               className={cn(
-                "shrink-0 transition-all",
+                "shrink-0",
+                isDragging ? "transition-none" : "transition-colors",
                 isActive ? "size-4 text-primary" : "size-3.5 text-muted-foreground",
               )}
               strokeWidth={2}
@@ -194,10 +237,11 @@ function SortableTab({
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
-                onClose(tab.id)
+                onRequestClose(tab.id)
               }}
               className={cn(
-                "my-auto mr-1 flex items-center justify-center rounded-sm text-muted-foreground/40 transition-all hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "my-auto mr-1 flex items-center justify-center rounded-sm text-muted-foreground/40 hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                isDragging ? "transition-none" : "transition-colors",
                 isActive ? "size-5" : "size-4",
               )}
               aria-label={`關閉 ${tab.title}`}

@@ -121,6 +121,32 @@ test("Many tabs scroll inside Tab Header viewport", async ({ page }) => {
   expect(tabViewportWidth.scrollWidth).toBeGreaterThan(tabViewportWidth.clientWidth)
 })
 
+test("Confirming close dialog removes the tab", async ({ page }) => {
+  await openCleanWorkspace(page)
+
+  const itemsMenuButton = getSidebarMenuButton(page, "Items")
+  await itemsMenuButton.click()
+
+  // 不靠「名稱數量為 0」判斷，改讀 localStorage 抓出剛開的這個 tab id，
+  // 確保驗證的是「這個特定 tab 真的消失了」，不受其他同名 Items tab 影響
+  const newTabId = await page.evaluate((storageKey) => {
+    const raw = localStorage.getItem(storageKey)
+    const parsed = raw ? JSON.parse(raw) : null
+    const tabs: Array<{ id: string }> = parsed?.state?.tabs ?? []
+    return tabs.find((t) => t.id !== "dashboard")?.id ?? null
+  }, TAB_STORAGE_KEY)
+  expect(newTabId).not.toBeNull()
+
+  const newTab = page.locator(`[data-tab-id="${newTabId}"]`)
+  await expect(newTab).toHaveCount(1)
+
+  await newTab.getByRole("button", { name: "關閉 Items" }).click()
+  await page.getByRole("button", { name: "確認關閉" }).click()
+
+  await expect(page.getByRole("dialog")).toHaveCount(0)
+  await expect(newTab).toHaveCount(0)
+})
+
 test("Max tab limit still returns from router page to tab workspace", async ({ page }) => {
   await openWorkspaceWithSeededItems(page, MAX_TABS - 1)
   await page.goto("/test-tab")
