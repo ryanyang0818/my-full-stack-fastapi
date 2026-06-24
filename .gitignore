@@ -1,6 +1,7 @@
-.claude/*
-.codex/*
-.vscode/*
+.claude/
+.codex/
+/frontend/docs/執行計畫/
+.vscode/
 !.vscode/extensions.json
 node_modules/
 /test-results/
