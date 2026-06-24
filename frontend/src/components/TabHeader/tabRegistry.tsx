@@ -1,6 +1,7 @@
-import { Briefcase, Home, type LucideIcon } from "lucide-react"
+import { Briefcase, Home, type LucideIcon, Users } from "lucide-react"
 import type { ComponentType } from "react"
 
+import { AdminView } from "@/components/Admin/AdminView"
 import { DashboardView } from "@/components/Dashboard/DashboardView"
 import { ItemsView } from "@/components/Items/ItemsView"
 import type { TabKey } from "@/components/TabHeader/types"
@@ -23,6 +24,11 @@ export const tabRegistry: Record<TabKey, TabDefinition> = {
     title: "Items",
     icon: Briefcase,
     component: ItemsView,
+  },
+  admin: {
+    title: "Admin",
+    icon: Users,
+    component: AdminView,
   },
 }
 

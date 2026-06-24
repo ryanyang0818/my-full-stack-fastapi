@@ -80,6 +80,24 @@ test("Sidebar can open duplicated Items tabs", async ({ page }) => {
   await expect(page).toHaveURL("/")
 })
 
+test("Sidebar Admin opens Admin content inside Tab Header", async ({ page }) => {
+  await openCleanWorkspace(page)
+
+  const adminMenuButton = getSidebarMenuButton(page, "Admin").first()
+  await expect(adminMenuButton).toBeVisible()
+  await adminMenuButton.click()
+
+  const tabViewport = getTabViewport(page)
+  await expect(
+    tabViewport.getByRole("button", { exact: true, name: "Admin" }),
+  ).toHaveCount(1)
+  await expect(page.getByRole("heading", { name: "Users" })).toBeVisible()
+  await expect(
+    page.getByText("Manage user accounts and permissions"),
+  ).toBeVisible()
+  await expect(page).toHaveURL("/")
+})
+
 test("Many tabs do not create document-level horizontal scroll", async ({ page }) => {
   await openWorkspaceWithSeededItems(page, MAX_TABS - 1)
 
