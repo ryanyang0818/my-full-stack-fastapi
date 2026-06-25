@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 
 from pydantic import EmailStr
-from sqlalchemy import DateTime
+from sqlalchemy import Column, DateTime, text
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -49,9 +49,21 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
-    created_at: datetime | None = Field(
+    created_at: datetime = Field(
         default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+    updated_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+    last_login_at: datetime | None = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), nullable=True),
     )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
 
@@ -59,12 +71,117 @@ class User(UserBase, table=True):
 # Properties to return via API, id is always required
 class UserPublic(UserBase):
     id: uuid.UUID
-    created_at: datetime | None = None
+    created_at: datetime
+    updated_at: datetime
+    last_login_at: datetime | None = None
 
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
+
+
+# Shared role properties
+class RoleBase(SQLModel):
+    code: str = Field(unique=True, index=True, max_length=100)
+    name: str = Field(max_length=100)
+    description: str | None = Field(default=None, max_length=255)
+    is_active: bool = True
+    sort_order: int = 0
+
+
+# Database model, database table inferred from class name
+class Role(RoleBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    created_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+    updated_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+
+
+# Shared menu properties
+class MenuBase(SQLModel):
+    key: str = Field(unique=True, index=True, max_length=100)
+    label: str = Field(max_length=100)
+    path: str | None = Field(default=None, max_length=255)
+    sort_order: int = 0
+    icon: str | None = Field(default=None, max_length=100)
+    is_active: bool = True
+    is_visible: bool = True
+
+
+# Database model, database table inferred from class name
+class Menu(MenuBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    parent_id: uuid.UUID | None = Field(default=None, foreign_key="menu.id")
+    created_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+
+
+class MenuTreeNodePublic(SQLModel):
+    id: uuid.UUID
+    key: str
+    label: str
+    path: str | None = None
+    icon: str | None = None
+    sortOrder: int
+    children: list["MenuTreeNodePublic"] = Field(default_factory=list)
+
+
+# Database model for user and role many-to-many relationship
+class UserRole(SQLModel, table=True):
+    __tablename__ = "user_role"
+
+    user_id: uuid.UUID = Field(foreign_key="user.id", primary_key=True)
+    role_id: uuid.UUID = Field(foreign_key="role.id", primary_key=True)
+    created_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+
+
+# Database model for role and menu many-to-many relationship
+class RoleMenu(SQLModel, table=True):
+    __tablename__ = "role_menu"
+
+    role_id: uuid.UUID = Field(foreign_key="role.id", primary_key=True)
+    menu_id: uuid.UUID = Field(foreign_key="menu.id", primary_key=True)
+    created_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
+
+
+# Database model for user-specific menu allow or deny overrides
+class UserMenuOverride(SQLModel, table=True):
+    __tablename__ = "user_menu_override"
+
+    user_id: uuid.UUID = Field(foreign_key="user.id", primary_key=True)
+    menu_id: uuid.UUID = Field(foreign_key="menu.id", primary_key=True)
+    effect: str = Field(max_length=10)
+    reason: str | None = Field(default=None, max_length=255)
+    created_at: datetime = Field(
+        default_factory=get_datetime_utc,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=text("now()")
+        ),
+    )
 
 
 # Shared properties

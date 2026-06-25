@@ -23,6 +23,7 @@ from app.models import (
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
+    get_datetime_utc,
 )
 from app.utils import generate_new_account_email, send_email
 
@@ -94,6 +95,7 @@ def update_user_me(
             )
     user_data = user_in.model_dump(exclude_unset=True)
     current_user.sqlmodel_update(user_data)
+    current_user.updated_at = get_datetime_utc()
     session.add(current_user)
     session.commit()
     session.refresh(current_user)
@@ -116,6 +118,7 @@ def update_password_me(
         )
     hashed_password = get_password_hash(body.new_password)
     current_user.hashed_password = hashed_password
+    current_user.updated_at = get_datetime_utc()
     session.add(current_user)
     session.commit()
     return Message(message="Password updated successfully")
