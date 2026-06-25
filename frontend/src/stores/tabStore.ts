@@ -37,6 +37,7 @@ type TabStore = {
   closeAll: () => void
   reorder: (activeId2: string, overId: string) => void
   reset: () => void
+  cycleTab: (direction: "next" | "prev") => void
 }
 
 // 計算「初始狀態」：只有固定頁籤、active 指向固定頁籤。reset 與 store 初值都用它
@@ -139,6 +140,17 @@ export const useTabStore = create<TabStore>()(
 
       // 重置：還原成「只有固定頁籤 + active=固定頁籤」。唯一呼叫點 = 登入成功時
       reset: () => set(initialState()),
+
+      // 循環切換頁籤：next 往右、prev 往左，到頭時循環
+      cycleTab: (direction) => {
+        const { tabs, activeId } = get()
+        const index = tabs.findIndex((t) => t.id === activeId)
+        if (index === -1) return
+        const len = tabs.length
+        const newIndex =
+          direction === "next" ? (index + 1) % len : (index - 1 + len) % len
+        set({ activeId: tabs[newIndex].id })
+      },
     }),
     {
       name: TAB_STORAGE_KEY,

@@ -159,7 +159,7 @@ export function AppFooter({ onLayoutVisibilityChange }: AppFooterProps) {
       cancelReveal()
       cancelHide()
     }
-  }, [])
+  }, [cancelHide, cancelReveal])
 
   return (
     <>

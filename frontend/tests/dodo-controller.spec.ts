@@ -105,5 +105,4 @@ test("window.dodo.controller exposes footer controller", async ({ page }) => {
   const footer = page.locator('[data-dodo-section="footer"]')
 
   await expect(footer.getByText("已連線", { exact: true })).toBeVisible()
-
 })

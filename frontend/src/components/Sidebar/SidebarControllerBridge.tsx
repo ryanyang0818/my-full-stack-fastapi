@@ -1,10 +1,9 @@
 import { useCallback, useEffect } from "react"
-
+import { useSidebar } from "@/components/ui/sidebar"
 import {
   type DodoSidebarController,
   registerDodoControllerSection,
 } from "@/lib/dodo-controller"
-import { useSidebar } from "@/components/ui/sidebar"
 
 // 將既有 SidebarProvider 狀態註冊到 DoDo 全域控制器
 export function SidebarControllerBridge() {
@@ -25,24 +24,27 @@ export function SidebarControllerBridge() {
   const collapse = useCallback(() => setOpen(false), [setOpen])
 
   // 開啟手機版 Sidebar 抽屜
-  const openMobileSidebar = useCallback(() => setOpenMobile(true), [
-    setOpenMobile,
-  ])
+  const openMobileSidebar = useCallback(
+    () => setOpenMobile(true),
+    [setOpenMobile],
+  )
 
   // 關閉手機版 Sidebar 抽屜
-  const closeMobileSidebar = useCallback(() => setOpenMobile(false), [
-    setOpenMobile,
-  ])
+  const closeMobileSidebar = useCallback(
+    () => setOpenMobile(false),
+    [setOpenMobile],
+  )
 
   // 取得 Sidebar 對外狀態
   const getState = useCallback(
-    () => ({
-      name: "sidebar",
-      state,
-      open,
-      openMobile,
-      isMobile,
-    }) as const,
+    () =>
+      ({
+        name: "sidebar",
+        state,
+        open,
+        openMobile,
+        isMobile,
+      }) as const,
     [state, open, openMobile, isMobile],
   )
 

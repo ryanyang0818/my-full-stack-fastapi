@@ -219,7 +219,9 @@ function SortableTab({
               className={cn(
                 "shrink-0",
                 isDragging ? "transition-none" : "transition-colors",
-                isActive ? "size-4 text-primary" : "size-3.5 text-muted-foreground",
+                isActive
+                  ? "size-4 text-primary"
+                  : "size-3.5 text-muted-foreground",
               )}
               strokeWidth={2}
               aria-hidden="true"

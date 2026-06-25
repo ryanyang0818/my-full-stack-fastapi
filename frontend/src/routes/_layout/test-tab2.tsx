@@ -84,7 +84,7 @@ function TestTab2() {
                   className={cn(
                     "relative flex shrink-0 items-stretch overflow-hidden rounded-md border border-border bg-background text-muted-foreground transition-colors after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5",
                     isActive &&
-                      "bg-muted text-foreground after:bg-primary shadow-sm shadow-black/5"
+                      "bg-muted text-foreground after:bg-primary shadow-sm shadow-black/5",
                   )}
                 >
                   <TabsTrigger
@@ -92,7 +92,7 @@ function TestTab2() {
                     className={cn(
                       "relative rounded-none border-0 bg-transparent py-2 text-inherit shadow-none after:hidden hover:text-inherit data-[state=active]:bg-transparent data-[state=active]:text-inherit data-[state=active]:shadow-none",
                       tab.closable ? "pe-2" : "pe-3",
-                      index === 0 && "rounded-s"
+                      index === 0 && "rounded-s",
                     )}
                   >
                     <Icon

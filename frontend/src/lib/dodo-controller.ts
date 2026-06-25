@@ -98,10 +98,9 @@ export function ensureDodoController() {
 }
 
 // 註冊指定首頁區塊的 Console 控制器
-export function registerDodoControllerSection<TKey extends keyof DodoController>(
-  name: TKey,
-  controller: DodoController[TKey],
-) {
+export function registerDodoControllerSection<
+  TKey extends keyof DodoController,
+>(name: TKey, controller: DodoController[TKey]) {
   const dodoController = ensureDodoController()
   dodoController[name] = controller
 

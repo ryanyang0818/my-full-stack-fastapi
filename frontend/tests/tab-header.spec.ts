@@ -1,15 +1,13 @@
-import { expect, test, type Page } from "@playwright/test"
+import { expect, type Page, test } from "@playwright/test"
 
 const TAB_STORAGE_KEY = "dodo.tabs.v2"
 const MAX_TABS = 20
 
 // 取得正式 Tab Header 的 Radix viewport，避免抓到 Sidebar 按鈕
 function getTabViewport(page: Page) {
-  return page
-    .locator("[data-radix-scroll-area-viewport]")
-    .filter({
-      has: page.getByRole("button", { exact: true, name: "Dashboard" }),
-    })
+  return page.locator("[data-radix-scroll-area-viewport]").filter({
+    has: page.getByRole("button", { exact: true, name: "Dashboard" }),
+  })
 }
 
 // 取得側邊欄主選單按鈕
@@ -80,7 +78,9 @@ test("Sidebar can open duplicated Items tabs", async ({ page }) => {
   await expect(page).toHaveURL("/")
 })
 
-test("Sidebar Admin opens Admin content inside Tab Header", async ({ page }) => {
+test("Sidebar Admin opens Admin content inside Tab Header", async ({
+  page,
+}) => {
   await openCleanWorkspace(page)
 
   const adminMenuButton = getSidebarMenuButton(page, "Admin").first()
@@ -98,7 +98,9 @@ test("Sidebar Admin opens Admin content inside Tab Header", async ({ page }) => 
   await expect(page).toHaveURL("/")
 })
 
-test("Many tabs do not create document-level horizontal scroll", async ({ page }) => {
+test("Many tabs do not create document-level horizontal scroll", async ({
+  page,
+}) => {
   await openWorkspaceWithSeededItems(page, MAX_TABS - 1)
 
   const documentWidth = await page.evaluate(() => ({
@@ -106,7 +108,9 @@ test("Many tabs do not create document-level horizontal scroll", async ({ page }
     scrollWidth: document.documentElement.scrollWidth,
   }))
 
-  expect(documentWidth.scrollWidth).toBeLessThanOrEqual(documentWidth.clientWidth + 1)
+  expect(documentWidth.scrollWidth).toBeLessThanOrEqual(
+    documentWidth.clientWidth + 1,
+  )
 })
 
 test("Many tabs scroll inside Tab Header viewport", async ({ page }) => {
@@ -118,7 +122,9 @@ test("Many tabs scroll inside Tab Header viewport", async ({ page }) => {
     scrollWidth: element.scrollWidth,
   }))
 
-  expect(tabViewportWidth.scrollWidth).toBeGreaterThan(tabViewportWidth.clientWidth)
+  expect(tabViewportWidth.scrollWidth).toBeGreaterThan(
+    tabViewportWidth.clientWidth,
+  )
 })
 
 test("Confirming close dialog removes the tab", async ({ page }) => {
@@ -147,7 +153,9 @@ test("Confirming close dialog removes the tab", async ({ page }) => {
   await expect(newTab).toHaveCount(0)
 })
 
-test("Max tab limit still returns from router page to tab workspace", async ({ page }) => {
+test("Max tab limit still returns from router page to tab workspace", async ({
+  page,
+}) => {
   await openWorkspaceWithSeededItems(page, MAX_TABS - 1)
   await page.goto("/test-tab")
 
@@ -155,6 +163,8 @@ test("Max tab limit still returns from router page to tab workspace", async ({ p
   await expect(itemsMenuButton).toHaveCount(1)
   await itemsMenuButton.click()
 
-  await expect(page.getByText(`已達上限（${MAX_TABS}），請先關閉再開`)).toBeVisible()
+  await expect(
+    page.getByText(`已達上限（${MAX_TABS}），請先關閉再開`),
+  ).toBeVisible()
   await expect(page).toHaveURL("/")
 })

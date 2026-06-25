@@ -5,25 +5,31 @@ import { ClosableTabs, type TabConfig } from "@/components/Common/ClosableTabs"
 
 const DEMO_TABS: TabConfig[] = [
   {
-    value: 'tab-1',
-    label: 'Overview',
+    value: "tab-1",
+    label: "Overview",
     icon: House,
     closable: false,
-    content: <p className="p-4 text-sm text-muted-foreground">Overview 內容區塊</p>,
+    content: (
+      <p className="p-4 text-sm text-muted-foreground">Overview 內容區塊</p>
+    ),
   },
   {
-    value: 'tab-2',
-    label: 'Projects',
+    value: "tab-2",
+    label: "Projects",
     icon: PanelsTopLeft,
     closable: true,
-    content: <p className="p-4 text-sm text-muted-foreground">Projects 內容區塊</p>,
+    content: (
+      <p className="p-4 text-sm text-muted-foreground">Projects 內容區塊</p>
+    ),
   },
   {
-    value: 'tab-3',
-    label: 'Packages',
+    value: "tab-3",
+    label: "Packages",
     icon: Box,
     closable: true,
-    content: <p className="p-4 text-sm text-muted-foreground">Packages 內容區塊</p>,
+    content: (
+      <p className="p-4 text-sm text-muted-foreground">Packages 內容區塊</p>
+    ),
   },
 ]
 

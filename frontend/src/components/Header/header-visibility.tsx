@@ -9,8 +9,8 @@ import {
 } from "react"
 
 import {
-  registerDodoControllerSection,
   type DodoVisibilityController,
+  registerDodoControllerSection,
 } from "@/lib/dodo-controller"
 
 type HeaderVisibilityState = {
@@ -42,8 +42,9 @@ declare global {
   }
 }
 
-const HeaderVisibilityContext =
-  createContext<HeaderVisibilityControls | null>(null)
+const HeaderVisibilityContext = createContext<HeaderVisibilityControls | null>(
+  null,
+)
 
 // 提供雙層 Header 的顯示狀態與外部 JavaScript 控制介面
 export function HeaderVisibilityProvider({

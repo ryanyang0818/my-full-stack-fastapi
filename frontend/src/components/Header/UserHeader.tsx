@@ -25,11 +25,7 @@ export function UserHeader() {
     >
       <SidebarTrigger className="size-8 shrink-0 text-slate-600 hover:bg-slate-100 hover:text-slate-950" />
       <div className="flex h-full shrink-0 items-center gap-2.5 border-r border-slate-200 pr-5">
-        <img
-          src={dodoIcon}
-          alt="DoDo ERP"
-          className="size-[30px] rounded"
-        />
+        <img src={dodoIcon} alt="DoDo ERP" className="size-[30px] rounded" />
         <div className="min-w-0 leading-tight">
           <div className="font-semibold text-slate-950">DoDo ERP</div>
           <div className="font-mono text-[10px] text-slate-500">

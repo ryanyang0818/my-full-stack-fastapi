@@ -19,6 +19,7 @@ import {
   useHeaderVisibility,
 } from "@/components/Header/header-visibility"
 import { UserHeader } from "@/components/Header/UserHeader"
+import { KeyboardShortcutsProvider } from "@/components/Keyboard/KeyboardShortcutsProvider"
 import AppSidebar from "@/components/Sidebar/AppSidebar"
 import { SidebarControllerBridge } from "@/components/Sidebar/SidebarControllerBridge"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -61,7 +62,7 @@ function MainContentController({ children }: { children: ReactNode }) {
     }
 
     return registerDodoControllerSection("mainContent", controller)
-  }, [])
+  }, [getElement, getState])
 
   return (
     <main
@@ -124,6 +125,7 @@ function AuthenticatedLayout() {
         </MainContentController>
       </SidebarInset>
       <AppFooter onLayoutVisibilityChange={setFooterLayoutVisible} />
+      <KeyboardShortcutsProvider />
     </SidebarProvider>
   )
 }

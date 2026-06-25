@@ -161,9 +161,7 @@ test("hideUserHeader() 隱藏 UserHeader", async ({ page }) => {
   await expect(userHeader).toBeHidden()
   await expect
     .poll(() =>
-      page.evaluate(
-        () => window.headerControls?.getState().userHeaderVisible,
-      ),
+      page.evaluate(() => window.headerControls?.getState().userHeaderVisible),
     )
     .toBe(false)
 })
@@ -180,9 +178,7 @@ test("showUserHeader() 顯示 UserHeader", async ({ page }) => {
   await expect(userHeader).toBeVisible()
   await expect
     .poll(() =>
-      page.evaluate(
-        () => window.headerControls?.getState().userHeaderVisible,
-      ),
+      page.evaluate(() => window.headerControls?.getState().userHeaderVisible),
     )
     .toBe(true)
 })
@@ -197,9 +193,7 @@ test("toggleUserHeader() 切換 UserHeader 顯示狀態", async ({ page }) => {
   await expect(userHeader).toBeHidden()
   await expect
     .poll(() =>
-      page.evaluate(
-        () => window.headerControls?.getState().userHeaderVisible,
-      ),
+      page.evaluate(() => window.headerControls?.getState().userHeaderVisible),
     )
     .toBe(false)
 
@@ -207,9 +201,7 @@ test("toggleUserHeader() 切換 UserHeader 顯示狀態", async ({ page }) => {
   await expect(userHeader).toBeVisible()
   await expect
     .poll(() =>
-      page.evaluate(
-        () => window.headerControls?.getState().userHeaderVisible,
-      ),
+      page.evaluate(() => window.headerControls?.getState().userHeaderVisible),
     )
     .toBe(true)
 })
