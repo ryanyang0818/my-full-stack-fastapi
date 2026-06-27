@@ -36,6 +36,16 @@ export type ItemUpdate = {
     description?: (string | null);
 };
 
+export type MenuTreeNodePublic = {
+    id: string;
+    key: string;
+    label: string;
+    path?: (string | null);
+    icon?: (string | null);
+    sortOrder: number;
+    children?: Array<MenuTreeNodePublic>;
+};
+
 export type Message = {
     message: string;
 };
@@ -76,7 +86,9 @@ export type UserPublic = {
     is_superuser?: boolean;
     full_name?: (string | null);
     id: string;
-    created_at?: (string | null);
+    created_at: string;
+    updated_at: string;
+    last_login_at?: (string | null);
 };
 
 export type UserRegister = {
@@ -112,6 +124,10 @@ export type ValidationError = {
         [key: string]: unknown;
     };
 };
+
+export type HelloHelloWorldResponse = ({
+    [key: string]: (string);
+});
 
 export type ItemsReadItemsData = {
     limit?: number;
@@ -171,11 +187,15 @@ export type LoginRecoverPasswordHtmlContentData = {
 
 export type LoginRecoverPasswordHtmlContentResponse = (string);
 
+export type MenusReadMyMenuTreeResponse = (Array<MenuTreeNodePublic>);
+
 export type PrivateCreateUserData = {
     requestBody: PrivateUserCreate;
 };
 
 export type PrivateCreateUserResponse = (UserPublic);
+
+export type TestReadHelloResponse = (string);
 
 export type UsersReadUsersData = {
     limit?: number;

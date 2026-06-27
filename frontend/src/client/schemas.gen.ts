@@ -196,6 +196,60 @@ export const ItemsPublicSchema = {
     title: 'ItemsPublic'
 } as const;
 
+export const MenuTreeNodePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        key: {
+            type: 'string',
+            title: 'Key'
+        },
+        label: {
+            type: 'string',
+            title: 'Label'
+        },
+        path: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Path'
+        },
+        icon: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Icon'
+        },
+        sortOrder: {
+            type: 'integer',
+            title: 'Sortorder'
+        },
+        children: {
+            items: {
+                '$ref': '#/components/schemas/MenuTreeNodePublic'
+            },
+            type: 'array',
+            title: 'Children'
+        }
+    },
+    type: 'object',
+    required: ['id', 'key', 'label', 'sortOrder'],
+    title: 'MenuTreeNodePublic'
+} as const;
+
 export const MessageSchema = {
     properties: {
         message: {
@@ -366,6 +420,16 @@ export const UserPublicSchema = {
             title: 'Id'
         },
         created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
+        updated_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Updated At'
+        },
+        last_login_at: {
             anyOf: [
                 {
                     type: 'string',
@@ -375,11 +439,11 @@ export const UserPublicSchema = {
                     type: 'null'
                 }
             ],
-            title: 'Created At'
+            title: 'Last Login At'
         }
     },
     type: 'object',
-    required: ['email', 'id'],
+    required: ['email', 'id', 'created_at', 'updated_at'],
     title: 'UserPublic'
 } as const;
 

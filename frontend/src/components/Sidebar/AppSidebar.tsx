@@ -1,6 +1,8 @@
+import { useQuery } from "@tanstack/react-query"
 import { Briefcase, Home, Users } from "lucide-react"
 import { useState } from "react"
 
+import { MenusService, type MenuTreeNodePublic } from "@/client"
 import { SidebarAppearance } from "@/components/Common/Appearance"
 import {
   Sidebar,
@@ -8,11 +10,10 @@ import {
   SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import useAuth from "@/hooks/useAuth"
+import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 import { type Item, Main } from "./Main"
 import { SidebarSearch } from "./SidebarSearch"
 import { TreeMenu } from "./TreeMenu"
-import { TREE_DATA } from "./tree-data"
 import { User } from "./User"
 
 const baseItems: Item[] = [
@@ -20,14 +21,22 @@ const baseItems: Item[] = [
   { icon: Briefcase, title: "Items", path: "/items" },
 ]
 
-// 組合登入後頁面的主選單、樹狀選單、外觀設定與使用者資訊
+// 組合登入後頁面的固定入口、後端選單、外觀設定與使用者資訊
 export function AppSidebar() {
   const { user: currentUser } = useAuth()
   const [search, setSearch] = useState("")
-
   const items = currentUser?.is_superuser
     ? [...baseItems, { icon: Users, title: "Admin", path: "/admin" }]
     : baseItems
+  const {
+    data: menuTree = [],
+    isError: isMenuError,
+    isLoading: isMenuLoading,
+  } = useQuery<MenuTreeNodePublic[], Error>({
+    queryKey: ["sidebarMenuTree"],
+    queryFn: () => MenusService.readMyMenuTree(),
+    enabled: isLoggedIn(),
+  })
 
   return (
     <Sidebar
@@ -38,7 +47,12 @@ export function AppSidebar() {
       <SidebarContent>
         <Main items={items} />
         <SidebarSearch value={search} onChange={setSearch} />
-        <TreeMenu data={TREE_DATA} search={search} />
+        <TreeMenu
+          data={menuTree}
+          isError={isMenuError}
+          isLoading={isMenuLoading}
+          search={search}
+        />
       </SidebarContent>
       <SidebarFooter>
         <SidebarAppearance />
