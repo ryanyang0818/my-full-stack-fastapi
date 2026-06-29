@@ -1,9 +1,10 @@
-import { Briefcase, Home, type LucideIcon, Users } from "lucide-react"
+import { Briefcase, Home, ListTree, type LucideIcon, Users } from "lucide-react"
 import type { ComponentType } from "react"
 
 import { AdminView } from "@/components/Admin/AdminView"
 import { DashboardView } from "@/components/Dashboard/DashboardView"
 import { ItemsView } from "@/components/Items/ItemsView"
+import { MenusView } from "@/components/Menus/MenusView"
 import type { TabKey } from "@/components/TabHeader/types"
 
 // 單一頁籤種類的定義：標題、icon、內容元件
@@ -29,6 +30,11 @@ export const tabRegistry: Record<TabKey, TabDefinition> = {
     title: "Admin",
     icon: Users,
     component: AdminView,
+  },
+  menus: {
+    title: "Menus",
+    icon: ListTree,
+    component: MenusView,
   },
 }
 

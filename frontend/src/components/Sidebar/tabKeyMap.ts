@@ -5,6 +5,7 @@ export const PATH_TO_TAB_KEY: Record<string, TabKey> = {
   "/": "dashboard",
   "/items": "items",
   "/admin": "admin",
+  "/system/menus": "menus",
 }
 
 // 由 path 取得對應 TabKey，無 path 或無對應時回傳 undefined

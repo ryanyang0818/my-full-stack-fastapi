@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HelloHelloWorldResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MenusReadMyMenuTreeResponse, PrivateCreateUserData, PrivateCreateUserResponse, TestReadHelloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { HelloHelloWorldResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MenusReadMyMenuTreeResponse, MenusReadMenusData, MenusReadMenusResponse, MenusCreateMenuData, MenusCreateMenuResponse, MenusReadMenuData, MenusReadMenuResponse, MenusUpdateMenuData, MenusUpdateMenuResponse, MenusDeleteMenuData, MenusDeleteMenuResponse, PrivateCreateUserData, PrivateCreateUserResponse, TestReadHelloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class HelloService {
     /**
@@ -42,7 +42,7 @@ export class ItemsService {
             }
         });
     }
-    
+
     /**
      * Create Item
      * Create new item.
@@ -62,7 +62,7 @@ export class ItemsService {
             }
         });
     }
-    
+
     /**
      * Read Item
      * Get item by ID.
@@ -83,7 +83,7 @@ export class ItemsService {
             }
         });
     }
-    
+
     /**
      * Update Item
      * Update an item.
@@ -107,7 +107,7 @@ export class ItemsService {
             }
         });
     }
-    
+
     /**
      * Delete Item
      * Delete an item.
@@ -150,7 +150,7 @@ export class LoginService {
             }
         });
     }
-    
+
     /**
      * Test Token
      * Test access token
@@ -163,7 +163,7 @@ export class LoginService {
             url: '/api/v1/login/test-token'
         });
     }
-    
+
     /**
      * Recover Password
      * Password Recovery
@@ -184,7 +184,7 @@ export class LoginService {
             }
         });
     }
-    
+
     /**
      * Reset Password
      * Reset password
@@ -204,7 +204,7 @@ export class LoginService {
             }
         });
     }
-    
+
     /**
      * Recover Password Html Content
      * HTML Content for Password Recovery
@@ -237,6 +237,110 @@ export class MenusService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/v1/menus/tree'
+        });
+    }
+
+    /**
+     * Read Menus
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns MenusPublic Successful Response
+     * @throws ApiError
+     */
+    public static readMenus(data: MenusReadMenusData = {}): CancelablePromise<MenusReadMenusResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/menus/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+
+    /**
+     * Create Menu
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns MenuPublic Successful Response
+     * @throws ApiError
+     */
+    public static createMenu(data: MenusCreateMenuData): CancelablePromise<MenusCreateMenuResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/menus/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+
+    /**
+     * Read Menu
+     * @param data The data for the request.
+     * @param data.id
+     * @returns MenuPublic Successful Response
+     * @throws ApiError
+     */
+    public static readMenu(data: MenusReadMenuData): CancelablePromise<MenusReadMenuResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/menus/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+
+    /**
+     * Update Menu
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns MenuPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateMenu(data: MenusUpdateMenuData): CancelablePromise<MenusUpdateMenuResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/menus/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+
+    /**
+     * Delete Menu
+     * @param data The data for the request.
+     * @param data.id
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteMenu(data: MenusDeleteMenuData): CancelablePromise<MenusDeleteMenuResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/menus/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
         });
     }
 }

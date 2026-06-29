@@ -118,6 +118,23 @@ class MenuBase(SQLModel):
     is_visible: bool = True
 
 
+# Properties to receive on menu creation
+class MenuCreate(MenuBase):
+    parent_id: uuid.UUID | None = None
+
+
+# Properties to receive on menu update
+class MenuUpdate(SQLModel):
+    key: str | None = Field(default=None, max_length=100)
+    label: str | None = Field(default=None, max_length=100)
+    path: str | None = Field(default=None, max_length=255)
+    parent_id: uuid.UUID | None = None
+    sort_order: int | None = None
+    icon: str | None = Field(default=None, max_length=100)
+    is_active: bool | None = None
+    is_visible: bool | None = None
+
+
 # Database model, database table inferred from class name
 class Menu(MenuBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -128,6 +145,18 @@ class Menu(MenuBase, table=True):
             DateTime(timezone=True), nullable=False, server_default=text("now()")
         ),
     )
+
+
+# Properties to return via API, id is always required
+class MenuPublic(MenuBase):
+    id: uuid.UUID
+    parent_id: uuid.UUID | None = None
+    created_at: datetime
+
+
+class MenusPublic(SQLModel):
+    data: list[MenuPublic]
+    count: int
 
 
 class MenuTreeNodePublic(SQLModel):

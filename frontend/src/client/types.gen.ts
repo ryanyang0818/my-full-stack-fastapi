@@ -36,6 +36,35 @@ export type ItemUpdate = {
     description?: (string | null);
 };
 
+export type MenuCreate = {
+    key: string;
+    label: string;
+    path?: (string | null);
+    sort_order?: number;
+    icon?: (string | null);
+    is_active?: boolean;
+    is_visible?: boolean;
+    parent_id?: (string | null);
+};
+
+export type MenuPublic = {
+    key: string;
+    label: string;
+    path?: (string | null);
+    sort_order?: number;
+    icon?: (string | null);
+    is_active?: boolean;
+    is_visible?: boolean;
+    id: string;
+    parent_id?: (string | null);
+    created_at: string;
+};
+
+export type MenusPublic = {
+    data: Array<MenuPublic>;
+    count: number;
+};
+
 export type MenuTreeNodePublic = {
     id: string;
     key: string;
@@ -44,6 +73,17 @@ export type MenuTreeNodePublic = {
     icon?: (string | null);
     sortOrder: number;
     children?: Array<MenuTreeNodePublic>;
+};
+
+export type MenuUpdate = {
+    key?: (string | null);
+    label?: (string | null);
+    path?: (string | null);
+    parent_id?: (string | null);
+    sort_order?: (number | null);
+    icon?: (string | null);
+    is_active?: (boolean | null);
+    is_visible?: (boolean | null);
 };
 
 export type Message = {
@@ -188,6 +228,38 @@ export type LoginRecoverPasswordHtmlContentData = {
 export type LoginRecoverPasswordHtmlContentResponse = (string);
 
 export type MenusReadMyMenuTreeResponse = (Array<MenuTreeNodePublic>);
+
+export type MenusReadMenusData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type MenusReadMenusResponse = (MenusPublic);
+
+export type MenusCreateMenuData = {
+    requestBody: MenuCreate;
+};
+
+export type MenusCreateMenuResponse = (MenuPublic);
+
+export type MenusReadMenuData = {
+    id: string;
+};
+
+export type MenusReadMenuResponse = (MenuPublic);
+
+export type MenusUpdateMenuData = {
+    id: string;
+    requestBody: MenuUpdate;
+};
+
+export type MenusUpdateMenuResponse = (MenuPublic);
+
+export type MenusDeleteMenuData = {
+    id: string;
+};
+
+export type MenusDeleteMenuResponse = (Message);
 
 export type PrivateCreateUserData = {
     requestBody: PrivateUserCreate;
