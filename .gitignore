@@ -4,8 +4,10 @@
 
 .claude/
 .codex/
+.agents/
 .cursor/
 *.local.json
+skills-lock.json
 
 .vscode/*
 !.vscode/extensions.json
@@ -20,4 +22,3 @@ node_modules/
 /專案藍圖/
 **/superpowers/
 /docs/todo/
-
