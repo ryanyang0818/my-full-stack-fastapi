@@ -44,7 +44,7 @@ export function TabHeaderController() {
           onReorder={reorder}
         />
       </div>
-      <div className="mx-auto w-full min-w-0 max-w-7xl pt-4">
+      <div className="w-full min-w-0 max-w-screen-2xl pt-4">
         <TabPageHost />
       </div>
     </div>
