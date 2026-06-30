@@ -32,7 +32,10 @@ export function TabHeaderController() {
   )
 
   return (
-    <div className="flex h-full min-w-0 flex-col">
+    // -mb-6/md:-mb-8 + h-[calc(...)]：咬穿 main 的下方留白(p-6 md:p-8)，
+    // 與下面 TabHeader 的 -mx-6/-mt-6/md:-mx-8/md:-mt-8 同一套既有假設，讓 flex-1 的
+    // Tab Content Area（及內部頁面如 ItemsCRUD 的 Side Panel）能真正貼齊 main 下緣
+    <div className="-mb-6 flex h-[calc(100%+1.5rem)] min-w-0 flex-col md:-mb-8 md:h-[calc(100%+2rem)]">
       <div className="-mx-6 -mt-6 min-w-0 overflow-hidden md:-mx-8 md:-mt-8">
         <TabHeader
           tabs={renderTabs}

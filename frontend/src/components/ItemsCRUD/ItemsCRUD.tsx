@@ -329,317 +329,329 @@ export function ItemsCRUD() {
     toast.info(`（示範）${msg}，未實際變更資料`)
 
   return (
-    <div ref={hostRef} className="relative flex h-full flex-col gap-3 text-sm">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">ItemsCRUD</h1>
-        <p className="text-xs text-muted-foreground">
-          密集表格示範（假資料，列表操作可用、表單僅展示）
-        </p>
-      </div>
+    <div
+      ref={hostRef}
+      className="relative -mt-4 flex h-[calc(100%+1rem)] flex-col text-sm"
+    >
+      {/* 可視內容自己補回 pt-4：根容器吃掉父層的 pt-4 留白只為了讓 Side Panel 真正貼齊上緣 */}
+      <div className="flex flex-col gap-3 pt-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">ItemsCRUD</h1>
+          <p className="text-xs text-muted-foreground">
+            密集表格示範（假資料，列表操作可用、表單僅展示）
+          </p>
+        </div>
 
-      {/* 工具列 */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Button
-            size="sm"
-            className="h-8"
-            onClick={() => setPanel({ mode: "add" })}
-          >
-            <Plus className="size-4" />
-            新增
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8"
-            disabled={selected.size !== 1}
-            onClick={() => setPanel({ mode: "edit", row: singleSelectedRow() })}
-          >
-            <Pencil className="size-4" />
-            編輯
-          </Button>
-          {selected.size > 0 && (
+        {/* 工具列 */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <Button
               size="sm"
-              variant="destructive"
               className="h-8"
-              onClick={() => setDeleteTarget({})}
+              onClick={() => setPanel({ mode: "add" })}
             >
-              <Trash2 className="size-4" />
-              刪除（{selected.size}）
+              <Plus className="size-4" />
+              新增
             </Button>
-          )}
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8"
-            onClick={() => demoToast("匯出")}
-          >
-            <Download className="size-4" />
-            匯出
-          </Button>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          {/* 日期 chips */}
-          <div className="flex items-center gap-1">
-            {DATE_CHIPS.map((c) => (
-              <button
-                type="button"
-                key={c.key}
-                onClick={() => {
-                  setChip(c.key)
-                  resetPage()
-                }}
-                className={cn(
-                  "inline-flex items-center gap-1 rounded-md border px-2 h-8 text-xs transition-colors",
-                  chip === c.key
-                    ? "border-primary bg-primary/10 text-primary font-medium"
-                    : "border-input text-muted-foreground hover:bg-muted",
-                )}
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8"
+              disabled={selected.size !== 1}
+              onClick={() =>
+                setPanel({ mode: "edit", row: singleSelectedRow() })
+              }
+            >
+              <Pencil className="size-4" />
+              編輯
+            </Button>
+            {selected.size > 0 && (
+              <Button
+                size="sm"
+                variant="destructive"
+                className="h-8"
+                onClick={() => setDeleteTarget({})}
               >
-                {c.label}
-                <span className="tabular-nums opacity-70">
-                  {chipCounts[c.key]}
-                </span>
-              </button>
-            ))}
+                <Trash2 className="size-4" />
+                刪除（{selected.size}）
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8"
+              onClick={() => demoToast("匯出")}
+            >
+              <Download className="size-4" />
+              匯出
+            </Button>
           </div>
 
-          {/* 狀態下拉 */}
-          <Select
-            value={statusFilter}
-            onValueChange={(v) => {
-              setStatusFilter(v as ItemStatus | "all")
-              resetPage()
-            }}
-          >
-            <SelectTrigger size="sm" className="h-8 w-[120px]">
-              <SelectValue placeholder="全部狀態" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">全部狀態</SelectItem>
-              {STATUS_ORDER.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {STATUS_CONFIG[s].label}
-                </SelectItem>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {/* 日期 chips */}
+            <div className="flex items-center gap-1">
+              {DATE_CHIPS.map((c) => (
+                <button
+                  type="button"
+                  key={c.key}
+                  onClick={() => {
+                    setChip(c.key)
+                    resetPage()
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-md border px-2 h-8 text-xs transition-colors",
+                    chip === c.key
+                      ? "border-primary bg-primary/10 text-primary font-medium"
+                      : "border-input text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  {c.label}
+                  <span className="tabular-nums opacity-70">
+                    {chipCounts[c.key]}
+                  </span>
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
 
-          {/* 搜尋 */}
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
+            {/* 狀態下拉 */}
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => {
+                setStatusFilter(v as ItemStatus | "all")
                 resetPage()
               }}
-              placeholder="搜尋編號 / 名稱 / 負責人…"
-              className="h-8 w-[220px] pl-8"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 密集表格 */}
-      <div className="rounded-md border">
-        <div className="max-h-[60vh] overflow-auto">
-          <table className="w-full border-collapse text-xs">
-            <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
-              <tr className="border-b">
-                <th className="h-8 w-9 px-2 text-left">
-                  <Checkbox
-                    checked={headerChecked}
-                    onCheckedChange={togglePageAll}
-                    aria-label="全選本頁"
-                  />
-                </th>
-                {COLUMNS.map((col) => (
-                  <th
-                    key={col.key}
-                    onClick={() => toggleSort(col.key)}
-                    className={cn(
-                      "h-8 px-2 font-medium text-muted-foreground whitespace-nowrap select-none cursor-pointer hover:text-foreground",
-                      col.align === "right" ? "text-right" : "text-left",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1",
-                        col.align === "right" && "flex-row-reverse",
-                      )}
-                    >
-                      {col.label}
-                      {sort?.key === col.key &&
-                        (sort.dir === "asc" ? (
-                          <ChevronUp className="size-3" />
-                        ) : (
-                          <ChevronDown className="size-3" />
-                        ))}
-                    </span>
-                  </th>
+            >
+              <SelectTrigger size="sm" className="h-8 w-[120px]">
+                <SelectValue placeholder="全部狀態" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全部狀態</SelectItem>
+                {STATUS_ORDER.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {STATUS_CONFIG[s].label}
+                  </SelectItem>
                 ))}
-                <th className="h-8 w-9 px-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {pageRows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={COLUMNS.length + 2}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    查無資料
-                  </td>
-                </tr>
-              ) : (
-                pageRows.map((r) => {
-                  const isSel = selected.has(r.id)
-                  return (
-                    <tr
-                      key={r.id}
-                      className={cn(
-                        "border-b transition-colors hover:bg-muted/40",
-                        isSel && "bg-primary/5",
-                      )}
-                    >
-                      <td className="h-8 px-2">
-                        <Checkbox
-                          checked={isSel}
-                          onCheckedChange={() => toggleRow(r.id)}
-                          aria-label={`選取 ${r.code}`}
-                        />
-                      </td>
-                      {COLUMNS.map((col) => (
-                        <td
-                          key={col.key}
-                          className={cn(
-                            "h-8 px-2 whitespace-nowrap",
-                            col.align === "right" ? "text-right" : "text-left",
-                          )}
-                        >
-                          {col.cell ? col.cell(r) : String(r[col.key])}
-                        </td>
-                      ))}
-                      <td className="h-8 px-2 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-7"
-                            >
-                              <EllipsisVertical className="size-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => setPanel({ mode: "edit", row: r })}
-                            >
-                              <Pencil className="size-4" />
-                              編輯
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              variant="destructive"
-                              onClick={() => setDeleteTarget({ row: r })}
-                            >
-                              <Trash2 className="size-4" />
-                              刪除
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  )
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+              </SelectContent>
+            </Select>
 
-        {/* 分頁列 */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
-            <span>
-              共{" "}
-              <span className="font-medium text-foreground">
-                {filtered.length}
-              </span>{" "}
-              筆
-              {selected.size > 0 && (
-                <span className="ml-1">· 已選 {selected.size}</span>
-              )}
-            </span>
-            <div className="flex items-center gap-1.5">
-              <span>每頁</span>
-              <Select
-                value={String(pageSize)}
-                onValueChange={(v) => {
-                  setPageSize(Number(v))
+            {/* 搜尋 */}
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value)
                   resetPage()
                 }}
-              >
-                <SelectTrigger size="sm" className="h-7 w-[68px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  {PAGE_SIZE_OPTIONS.map((n) => (
-                    <SelectItem key={n} value={String(n)}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="搜尋編號 / 名稱 / 負責人…"
+                className="h-8 w-[220px] pl-8"
+              />
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <span>
-              第{" "}
-              <span className="font-medium text-foreground">
-                {currentPage + 1}
-              </span>{" "}
-              / {pageCount} 頁
-            </span>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="size-7"
-                disabled={currentPage === 0}
-                onClick={() => setPage(0)}
-              >
-                <ChevronsLeft className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="size-7"
-                disabled={currentPage === 0}
-                onClick={() => setPage(currentPage - 1)}
-              >
-                <ChevronLeft className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="size-7"
-                disabled={currentPage >= pageCount - 1}
-                onClick={() => setPage(currentPage + 1)}
-              >
-                <ChevronRight className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="size-7"
-                disabled={currentPage >= pageCount - 1}
-                onClick={() => setPage(pageCount - 1)}
-              >
-                <ChevronsRight className="size-4" />
-              </Button>
+        {/* 密集表格 */}
+        <div className="rounded-md border">
+          <div className="max-h-[60vh] overflow-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
+                <tr className="border-b">
+                  <th className="h-8 w-9 px-2 text-left">
+                    <Checkbox
+                      checked={headerChecked}
+                      onCheckedChange={togglePageAll}
+                      aria-label="全選本頁"
+                    />
+                  </th>
+                  {COLUMNS.map((col) => (
+                    <th
+                      key={col.key}
+                      onClick={() => toggleSort(col.key)}
+                      className={cn(
+                        "h-8 px-2 font-medium text-muted-foreground whitespace-nowrap select-none cursor-pointer hover:text-foreground",
+                        col.align === "right" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1",
+                          col.align === "right" && "flex-row-reverse",
+                        )}
+                      >
+                        {col.label}
+                        {sort?.key === col.key &&
+                          (sort.dir === "asc" ? (
+                            <ChevronUp className="size-3" />
+                          ) : (
+                            <ChevronDown className="size-3" />
+                          ))}
+                      </span>
+                    </th>
+                  ))}
+                  <th className="h-8 w-9 px-2" />
+                </tr>
+              </thead>
+              <tbody>
+                {pageRows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={COLUMNS.length + 2}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      查無資料
+                    </td>
+                  </tr>
+                ) : (
+                  pageRows.map((r) => {
+                    const isSel = selected.has(r.id)
+                    return (
+                      <tr
+                        key={r.id}
+                        className={cn(
+                          "border-b transition-colors hover:bg-muted/40",
+                          isSel && "bg-primary/5",
+                        )}
+                      >
+                        <td className="h-8 px-2">
+                          <Checkbox
+                            checked={isSel}
+                            onCheckedChange={() => toggleRow(r.id)}
+                            aria-label={`選取 ${r.code}`}
+                          />
+                        </td>
+                        {COLUMNS.map((col) => (
+                          <td
+                            key={col.key}
+                            className={cn(
+                              "h-8 px-2 whitespace-nowrap",
+                              col.align === "right"
+                                ? "text-right"
+                                : "text-left",
+                            )}
+                          >
+                            {col.cell ? col.cell(r) : String(r[col.key])}
+                          </td>
+                        ))}
+                        <td className="h-8 px-2 text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-7"
+                              >
+                                <EllipsisVertical className="size-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  setPanel({ mode: "edit", row: r })
+                                }
+                              >
+                                <Pencil className="size-4" />
+                                編輯
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => setDeleteTarget({ row: r })}
+                              >
+                                <Trash2 className="size-4" />
+                                刪除
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 分頁列 */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-3">
+              <span>
+                共{" "}
+                <span className="font-medium text-foreground">
+                  {filtered.length}
+                </span>{" "}
+                筆
+                {selected.size > 0 && (
+                  <span className="ml-1">· 已選 {selected.size}</span>
+                )}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span>每頁</span>
+                <Select
+                  value={String(pageSize)}
+                  onValueChange={(v) => {
+                    setPageSize(Number(v))
+                    resetPage()
+                  }}
+                >
+                  <SelectTrigger size="sm" className="h-7 w-[68px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent side="top">
+                    {PAGE_SIZE_OPTIONS.map((n) => (
+                      <SelectItem key={n} value={String(n)}>
+                        {n}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span>
+                第{" "}
+                <span className="font-medium text-foreground">
+                  {currentPage + 1}
+                </span>{" "}
+                / {pageCount} 頁
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-7"
+                  disabled={currentPage === 0}
+                  onClick={() => setPage(0)}
+                >
+                  <ChevronsLeft className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-7"
+                  disabled={currentPage === 0}
+                  onClick={() => setPage(currentPage - 1)}
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-7"
+                  disabled={currentPage >= pageCount - 1}
+                  onClick={() => setPage(currentPage + 1)}
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-7"
+                  disabled={currentPage >= pageCount - 1}
+                  onClick={() => setPage(pageCount - 1)}
+                >
+                  <ChevronsRight className="size-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
