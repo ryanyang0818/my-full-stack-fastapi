@@ -1,12 +1,12 @@
-import uuid
 from typing import Any
 
 from sqlmodel import Session, select
 
 from app.core.security import get_password_hash, verify_password
-from app.models import Item, ItemCreate, User, UserCreate, UserUpdate, get_datetime_utc
+from app.models import User, UserCreate, UserUpdate, get_datetime_utc
 
 
+# 建立使用者，將明文密碼雜湊後存入
 def create_user(*, session: Session, user_create: UserCreate) -> User:
     db_obj = User.model_validate(
         user_create, update={"hashed_password": get_password_hash(user_create.password)}
@@ -17,6 +17,7 @@ def create_user(*, session: Session, user_create: UserCreate) -> User:
     return db_obj
 
 
+# 更新使用者；若含密碼則重新雜湊，並更新 updated_at
 def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
     user_data = user_in.model_dump(exclude_unset=True)
     extra_data: dict[str, Any] = {"updated_at": get_datetime_utc()}
@@ -31,6 +32,7 @@ def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
     return db_user
 
 
+# 以 email 查詢單一使用者
 def get_user_by_email(*, session: Session, email: str) -> User | None:
     statement = select(User).where(User.email == email)
     session_user = session.exec(statement).first()
@@ -42,6 +44,7 @@ def get_user_by_email(*, session: Session, email: str) -> User | None:
 DUMMY_HASH = "$argon2id$v=19$m=65536,t=3,p=4$MjQyZWE1MzBjYjJlZTI0Yw$YTU4NGM5ZTZmYjE2NzZlZjY0ZWY3ZGRkY2U2OWFjNjk"
 
 
+# 驗證帳密；查無使用者時仍執行雜湊比對以防 timing attack
 def authenticate(*, session: Session, email: str, password: str) -> User | None:
     db_user = get_user_by_email(session=session, email=email)
     if not db_user:
@@ -60,11 +63,3 @@ def authenticate(*, session: Session, email: str, password: str) -> User | None:
     session.commit()
     session.refresh(db_user)
     return db_user
-
-
-def create_item(*, session: Session, item_in: ItemCreate, owner_id: uuid.UUID) -> Item:
-    db_item = Item.model_validate(item_in, update={"owner_id": owner_id})
-    session.add(db_item)
-    session.commit()
-    session.refresh(db_item)
-    return db_item
