@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dodo Admin 權限模型說明 v2</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --paper: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #dbe5ee;
+      --blue: #0369a1;
+      --blue-soft: #e0f2fe;
+      --teal: #0f766e;
+      --teal-soft: #ccfbf1;
+      --amber: #b45309;
+      --amber-soft: #fef3c7;
+      --red: #b91c1c;
+      --red-soft: #fee2e2;
+      --slate-soft: #f1f5f9;
+      --shadow: 0 20px 55px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+      --max: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: var(--slate-soft);
+      color: #1e293b;
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 0.92em;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(219, 229, 238, 0.92);
+      background: rgba(248, 250, 252, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      gap: 22px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .nav {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      font-size: 14px;
+    }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 42px 24px 72px;
+    }
+
+    .hero {
+      margin-bottom: 28px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 860px;
+      font-size: 38px;
+    }
+
+    h2 {
+      margin-bottom: 14px;
+      font-size: 24px;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 10px 35px rgba(15, 23, 42, 0.04);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .callout {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--slate-soft);
+    }
+
+    .callout.blue {
+      border-color: #bae6fd;
+      background: var(--blue-soft);
+    }
+
+    .callout.teal {
+      border-color: #99f6e4;
+      background: var(--teal-soft);
+    }
+
+    .callout.amber {
+      border-color: #fde68a;
+      background: var(--amber-soft);
+    }
+
+    .callout.red {
+      border-color: #fecaca;
+      background: var(--red-soft);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--slate-soft);
+      color: #334155;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--slate-soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .badge.teal {
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .badge.red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .summary-list,
+    .rule-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .summary-list li,
+    .rule-list li {
+      padding-left: 4px;
+    }
+
+    .diagram {
+      width: 100%;
+      min-height: 260px;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .diagram text {
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .diagram {
+        overflow-x: auto;
+      }
+
+      .diagram svg {
+        min-width: 860px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .page {
+        padding: 28px 16px 56px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">D</span>
+        <span>Dodo Admin 權限模型</span>
+      </div>
+      <nav class="nav" aria-label="文件導覽">
+        <a href="#summary">摘要</a>
+        <a href="#objects">資料庫物件</a>
+        <a href="#logic">邏輯</a>
+        <a href="#examples">範例</a>
+        <a href="#components">React</a>
+        <a href="#controllers">FastAPI</a>
+        <a href="#boundaries">邊界</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Permission Foundation · Version 2</div>
+      <h1>Dodo Admin 權限模型：角色導向 RBAC 與 Menu scope</h1>
+      <p class="lead">
+        本文件用權限議題示範 Dodo Admin 的底層架構文件格式。重點是把資料庫邏輯、前端頁面邏輯、程式碼邏輯拆開，避免把「選單顯示」誤認成真正權限。
+      </p>
+    </section>
+
+    <section id="summary" class="section">
+      <h2>摘要</h2>
+      <ul class="summary-list">
+        <li>Dodo Admin 採用 <strong>角色導向 RBAC</strong>：先定義使用者角色，再由角色取得功能權限。</li>
+        <li><code>Menu</code> 是功能授權單位；有某個 <code>menu_key</code>，代表可以使用該功能範圍。</li>
+        <li><code>user_menu_override</code> 提供個人例外，可針對單一使用者做 <code>allow</code> 或 <code>deny</code>。</li>
+        <li>前端 Sidebar 只顯示使用者可見功能；真正權限 enforcement 必須在後端 <code>require_menu(menu_key)</code> 完成。</li>
+        <li>目前不做細粒度權限，例如 CRUD 分權、欄位級權限、資料列級 <code>owner_id</code> 隔離。</li>
+      </ul>
+    </section>
+
+    <section id="objects" class="section">
+      <h2>相關的資料庫物件</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>資料庫物件</th>
+            <th>分類</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>user</code></td>
+            <td><span class="badge">主體</span></td>
+            <td>代表登入者，是權限計算的起點。</td>
+          </tr>
+          <tr>
+            <td><code>role</code></td>
+            <td><span class="badge blue">角色</span></td>
+            <td>定義一群人的職責，例如 sales_staff、warehouse_manager。</td>
+          </tr>
+          <tr>
+            <td><code>user_role</code></td>
+            <td><span class="badge blue">關聯表</span></td>
+            <td>指定使用者擁有哪些角色。</td>
+          </tr>
+          <tr>
+            <td><code>menu</code></td>
+            <td><span class="badge teal">功能範圍</span></td>
+            <td>代表功能入口，也是 API 授權使用的 scope。</td>
+          </tr>
+          <tr>
+            <td><code>role_menu</code></td>
+            <td><span class="badge teal">授權表</span></td>
+            <td>指定角色可以使用哪些 menu 功能。</td>
+          </tr>
+          <tr>
+            <td><code>user_menu_override</code></td>
+            <td><span class="badge red">例外表</span></td>
+            <td>針對單一使用者補充或排除 menu 權限。</td>
+          </tr>
+          <tr>
+            <td><code>view_user_visible_menu</code></td>
+            <td><span class="badge">View</span></td>
+            <td>計算角色授權與個人例外後的最終可見 menu。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="logic" class="section">
+      <h2>邏輯</h2>
+
+      <h3>資料庫邏輯</h3>
+      <p>
+        資料庫負責保存角色、選單與使用者例外，並透過 view 統一產生使用者最後可用的 menu 清單。
+      </p>
+      <div class="diagram" aria-label="資料庫權限邏輯圖">
+        <svg viewBox="0 0 1040 300" role="img">
+          <defs>
+            <marker id="arrow-db" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#0369a1"></path>
+            </marker>
+          </defs>
+          <rect x="30" y="42" width="150" height="58" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="105" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#075985">user</text>
+
+          <rect x="240" y="42" width="150" height="58" rx="8" fill="#f1f5f9" stroke="#dbe5ee"></rect>
+          <text x="315" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">user_role</text>
+
+          <rect x="450" y="42" width="150" height="58" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="525" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#075985">role</text>
+
+          <rect x="660" y="42" width="150" height="58" rx="8" fill="#f1f5f9" stroke="#dbe5ee"></rect>
+          <text x="735" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">role_menu</text>
+
+          <rect x="870" y="42" width="140" height="58" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="940" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#0f766e">menu</text>
+
+          <rect x="240" y="190" width="190" height="58" rx="8" fill="#fee2e2" stroke="#fecaca"></rect>
+          <text x="335" y="224" text-anchor="middle" font-size="16" font-weight="700" fill="#b91c1c">user_menu_override</text>
+
+          <rect x="620" y="190" width="220" height="58" rx="8" fill="#fef3c7" stroke="#fde68a"></rect>
+          <text x="730" y="224" text-anchor="middle" font-size="16" font-weight="700" fill="#b45309">view_user_visible_menu</text>
+
+          <line x1="180" y1="71" x2="240" y2="71" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-db)"></line>
+          <line x1="390" y1="71" x2="450" y2="71" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-db)"></line>
+          <line x1="600" y1="71" x2="660" y2="71" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-db)"></line>
+          <line x1="810" y1="71" x2="870" y2="71" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-db)"></line>
+
+          <path d="M105 100 C105 164, 210 219, 240 219" fill="none" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arrow-db)"></path>
+          <path d="M430 219 C515 219, 540 219, 620 219" fill="none" stroke="#b45309" stroke-width="2.5" marker-end="url(#arrow-db)"></path>
+          <path d="M940 100 C940 170, 858 219, 840 219" fill="none" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-db)"></path>
+
+          <text x="490" y="136" font-size="14" fill="#475569">角色給基本權限</text>
+          <text x="118" y="166" font-size="14" fill="#475569">個人例外</text>
+          <text x="744" y="270" text-anchor="middle" font-size="14" fill="#475569">輸出使用者最終可見 / 可用 menu</text>
+        </svg>
+      </div>
+
+      <h3 style="margin-top: 28px;">前端頁面邏輯</h3>
+      <p>
+        前端不自行推導權限，而是根據後端回傳的 menu tree 顯示入口；使用者點擊可見 menu 後，開啟對應 tab 或頁面。
+      </p>
+      <div class="diagram" aria-label="前端頁面邏輯圖">
+        <svg viewBox="0 0 1040 280" role="img">
+          <defs>
+            <marker id="arrow-ui" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#0f766e"></path>
+            </marker>
+          </defs>
+          <rect x="36" y="72" width="170" height="64" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="121" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#075985">AppSidebar</text>
+          <text x="121" y="122" text-anchor="middle" font-size="13" fill="#075985">readMyMenuTree</text>
+
+          <rect x="282" y="72" width="170" height="64" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="367" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">TreeMenu</text>
+          <text x="367" y="122" text-anchor="middle" font-size="13" fill="#0f766e">顯示可見 menu</text>
+
+          <rect x="528" y="72" width="190" height="64" rx="8" fill="#fef3c7" stroke="#fde68a"></rect>
+          <text x="623" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#b45309">Open Feature</text>
+          <text x="623" y="122" text-anchor="middle" font-size="13" fill="#b45309">進入可見功能</text>
+
+          <line x1="206" y1="104" x2="282" y2="104" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-ui)"></line>
+          <line x1="452" y1="104" x2="528" y2="104" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-ui)"></line>
+
+          <rect x="282" y="188" width="436" height="48" rx="8" fill="#fee2e2" stroke="#fecaca"></rect>
+          <text x="500" y="217" text-anchor="middle" font-size="15" font-weight="700" fill="#b91c1c">前端隱藏選單只是 UX，不是安全防線</text>
+          <path d="M367 136 C367 168, 420 188, 500 188" fill="none" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arrow-ui)"></path>
+        </svg>
+      </div>
+
+      <h3 style="margin-top: 28px;">程式碼邏輯</h3>
+      <p>
+        API controller 在進入業務邏輯前呼叫 <code>require_menu(menu_key)</code>。通過才執行查詢或 mutation，不通過直接回 <code>403</code>。
+      </p>
+      <div class="diagram" aria-label="程式碼權限邏輯圖">
+        <svg viewBox="0 0 1040 300" role="img">
+          <defs>
+            <marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#0369a1"></path>
+            </marker>
+          </defs>
+          <rect x="42" y="68" width="160" height="62" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="122" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#075985">Request</text>
+          <text x="122" y="118" text-anchor="middle" font-size="13" fill="#075985">Bearer token</text>
+
+          <rect x="278" y="68" width="170" height="62" rx="8" fill="#f1f5f9" stroke="#dbe5ee"></rect>
+          <text x="363" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">CurrentUser</text>
+          <text x="363" y="118" text-anchor="middle" font-size="13" fill="#334155">JWT → user</text>
+
+          <rect x="524" y="68" width="190" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="619" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">require_menu</text>
+          <text x="619" y="118" text-anchor="middle" font-size="13" fill="#0f766e">check menu_key</text>
+
+          <rect x="790" y="34" width="170" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="875" y="60" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">Run handler</text>
+          <text x="875" y="84" text-anchor="middle" font-size="13" fill="#0f766e">CRUD / query</text>
+
+          <rect x="790" y="152" width="170" height="62" rx="8" fill="#fee2e2" stroke="#fecaca"></rect>
+          <text x="875" y="178" text-anchor="middle" font-size="15" font-weight="700" fill="#b91c1c">Return 403</text>
+          <text x="875" y="202" text-anchor="middle" font-size="13" fill="#b91c1c">no permission</text>
+
+          <line x1="202" y1="99" x2="278" y2="99" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-code)"></line>
+          <line x1="448" y1="99" x2="524" y2="99" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-code)"></line>
+          <path d="M714 84 C744 64, 760 65, 790 65" fill="none" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-code)"></path>
+          <path d="M714 114 C750 155, 760 183, 790 183" fill="none" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arrow-code)"></path>
+
+          <text x="748" y="55" font-size="13" fill="#0f766e">allowed</text>
+          <text x="742" y="176" font-size="13" fill="#b91c1c">denied</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>細節</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>規則</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>角色是主要權限來源</td>
+            <td>大部分權限應透過角色分配，不應逐一為使用者客製。</td>
+          </tr>
+          <tr>
+            <td>Menu 是功能授權單位</td>
+            <td>有 <code>inventory.products</code>，代表可以進入商品管理功能。</td>
+          </tr>
+          <tr>
+            <td>Override 是例外機制</td>
+            <td>只用來處理少數個人例外，不應取代角色設計。</td>
+          </tr>
+          <tr>
+            <td>Deny 優先</td>
+            <td>若角色允許，但使用者被 deny，最終應視為無權限。</td>
+          </tr>
+          <tr>
+            <td>後端是最後防線</td>
+            <td>API 必須檢查 <code>require_menu</code>，不能只靠前端隱藏選單。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="examples" class="section">
+      <h2>範例</h2>
+      <div class="grid-2">
+        <div class="callout teal">
+          <h3>角色授權</h3>
+          <p><code>warehouse_staff</code> 透過 <code>role_menu</code> 取得 <code>inventory.products</code>。</p>
+          <p>結果：使用者看得到商品管理選單，且 API <code>require_menu("inventory.products")</code> 通過。</p>
+        </div>
+        <div class="callout amber">
+          <h3>個人 Allow</h3>
+          <p>某使用者角色本來沒有 <code>sales.orders</code>，但被個別設定 allow。</p>
+          <p>結果：該使用者可以看到銷售訂單功能，也可以呼叫對應 API。</p>
+        </div>
+        <div class="callout red">
+          <h3>個人 Deny</h3>
+          <p>某使用者角色本來有 <code>inventory.stock</code>，但被個別設定 deny。</p>
+          <p>結果：最終看不到該選單，直接呼叫 API 也應回 <code>403</code>。</p>
+        </div>
+        <div class="callout blue">
+          <h3>跨域阻擋</h3>
+          <p><code>sales_staff</code> 直接呼叫 <code>/inventory/products</code>。</p>
+          <p>結果：即使知道 URL，也因缺少 menu key 而回 <code>403</code>。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="components" class="section">
+      <h2>React Component</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>重點檔案</th>
+            <th>簡短用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>frontend/src/components/Sidebar/AppSidebar.tsx</code></td>
+            <td>呼叫 <code>MenusService.readMyMenuTree()</code>，取得目前使用者可見的 menu tree。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/components/Sidebar/TreeMenu.tsx</code></td>
+            <td>渲染後端回傳的樹狀選單，點擊 leaf 後開啟對應 tab。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/components/Sidebar/tabKeyMap.ts</code></td>
+            <td>把 menu path 映射到前端 tab key，例如 <code>/system/menus → menus</code>。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/components/TabHeader/tabRegistry.tsx</code></td>
+            <td>定義 tab key 對應的標題、icon 與實際 React component。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/hooks/useAuth.ts</code></td>
+            <td>取得目前登入使用者資訊，供前端做顯示與基本狀態判斷。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="controllers" class="section">
+      <h2>FastAPI Controller</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>重點檔案</th>
+            <th>簡短用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>backend/app/api/deps.py</code></td>
+            <td>提供 <code>CurrentUser</code>、登入狀態解析與 superuser dependency。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/api/routes/menus.py</code></td>
+            <td>提供 <code>/menus/tree</code> 與 menu 管理 API，是 menu 權限資料的主要出口。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/models.py</code></td>
+            <td>定義 <code>Role</code>、<code>Menu</code>、<code>RoleMenu</code>、<code>UserMenuOverride</code> 等資料模型。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/alembic/versions/*role_menu*</code></td>
+            <td>建立 <code>menu</code>、<code>role_menu</code> 與角色選單相關 view。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/alembic/versions/*user_menu_override*</code></td>
+            <td>建立使用者個別 override 與 <code>view_user_visible_menu</code>。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="boundaries" class="section">
+      <h2>避免誤會與不做的地方</h2>
+      <div class="grid-2">
+        <div class="callout red">
+          <h3>不做細粒度權限</h3>
+          <ul class="rule-list">
+            <li>不做 read / create / update / delete 分開控管。</li>
+            <li>不做欄位級權限。</li>
+            <li>不做資料列級 <code>owner_id</code> 隔離。</li>
+          </ul>
+        </div>
+        <div class="callout amber">
+          <h3>不把前端當權限來源</h3>
+          <ul class="rule-list">
+            <li>隱藏按鈕只是 UX，不是安全。</li>
+            <li>隱藏選單只是結果，不是 enforcement。</li>
+            <li>直接打 API 必須仍然被後端擋住。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">
+      Draft v2 for discussion · Dodo Admin · Permission model documentation sample
+    </p>
+  </main>
+</body>
+</html>

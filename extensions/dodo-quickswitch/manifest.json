@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Dodo QuickSwitch",
+  "version": "1.0.0",
+  "description": "登入頁快速切換角色帳號（僅供本機開發環境使用）",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost:5173/login*",
+        "http://localhost:5174/login*",
+        "http://localhost:5175/login*",
+        "http://localhost:5176/login*",
+        "http://localhost:5177/login*",
+        "http://localhost:5178/login*",
+        "http://localhost:5179/login*"
+      ],
+      "js": ["accounts.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

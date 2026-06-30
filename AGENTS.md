@@ -57,14 +57,12 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 | 效能 | 避免不必要的 re-render 與過度動畫 |
 
 ## 計畫流程
-
 - 若使用者要求「提出計畫」，輸出 `<proposed_plan>` 區塊。
 - 若使用者允許計畫，把計畫存入 `docs/執行計畫/`，檔名使用 `YYYY-MM-DD-短標題.md`。
 - 若使用者要求「計畫歸檔」，把計畫移入 `docs/執行計畫/完成計畫/`，並確認是否 commit。
 - 計畫的測試項目不要包含 `npm run build`。
 
 ## 工作偏好
-
 - 重要開發任務先列計畫；使用者明確要求執行時再修改檔案。
 - 修改前先讀現有實作與相鄰檔案。
 - 優先用既有專案模式、Tailwind、shadcn/ui 與 lucide-react。
@@ -83,10 +81,13 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 >. 壓縮對話，開始新的任務
 
 ## 探索;提出計畫
-
-- 並註記 AI 的模型名稱作為作者。並放在檔名
+- 計畫時至少需要：
+  1. 描述概念與實作計畫，
+  2. 驗收項目
+  3. AI模型簽名在檔名與內文開頭
 - 此階段強制使用"唯讀方式"，不管harness的權限為何，此階段不能修改任何檔案。
 - 詢問使用者探索範圍
+- 遵循Ponytail, lazy senior dev mode
 - 使用 `rg` 搜尋相關元件、hook、type、style。
 - 不直接假設專案結構。
 - 要整理預計會影響/新增哪些檔案
@@ -95,20 +96,16 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 
 
 ## 存入計畫
-
-- 存入計畫時，必須有以下結構：
-  建立一個資料夾，資料夾名稱是這個計畫的敘述。
-  檔案內至少需要包含以下兩項：
-  1. 用來描述概念與實作計畫，
-  2. "驗收項目"來確認是否完成
-
-- 重要任務先提出計畫。
+- 存入計畫時，必須建立一個資料夾，資料夾名稱是這個計畫的敘述。
+  至少需要：
+  1. 描述概念與實作計畫，
+  2. 驗收項目
+  3. AI模型簽名在檔名與內文開頭
 - 若使用者要求保存計畫，存入 `docs/執行計畫/`。
 - 此階段不要測試。此階段也不設計測試情境。計畫中不要把 `npm run build` 放進測試項目。
 - 完成後詢問是否實作。
 
 ## 實作
-
 - 使用 `apply_patch` 修改檔案。
 - 保持修改範圍小。
 - 優先沿用既有設計系統與元件。
@@ -119,7 +116,6 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 - 此階段不要測試。此階段也不設計 playwright 測試情境。計畫中不要把 `npm run build` 放進測試項目。
 
 ## 測試
-
 - 詢問使用者如何驗證
 - 詢問使用者 設計 playwright 測試情境
 - 給使用者判斷，並列出修改的程式碼區別
@@ -130,26 +126,18 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 - 若使用者要求保存計畫，存入 `docs/執行計畫/完成計畫`。
 - git format如下，只記住格式，內容依照實際狀況改變
 ```
-SHA-1: 01cad79e4248c350ead254197c23b2525b8fc9a2
-
-* fix: 移除 Sidebar 中 TestTab / TestTab2 測試連結
-
-移除 AppSidebar 主選單裡的 TestTab、TestTab2 入口（路由頁本身保留），
-並清掉 Main.tsx 過時的對應註解。
-
+SHA-1: 
+* fix: 
+移除 AppSidebar 主選單裡blabla...
 計畫：docs/執行計畫/完成計畫/2026-06-22-remove-sidebar-testtab-links.md
-
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
-
 ```
 
 ## SOP摘要
-
 - 簡短列出改了什麼。
 - 說明驗證結果。
 - 若有未完成或無法驗證的部分，明確說出原因。
 
 ## 壓縮對話，開始新的任務
-
 - 簡短列出改了什麼。最好提出最後一次git info ex:"f301ec3 feat: 替換 DoDo ERP 品牌識別與 favicon"
 - 執行SOP中的"## 探索;提出計畫"
