@@ -329,7 +329,7 @@ export function ItemsCRUD() {
     toast.info(`（示範）${msg}，未實際變更資料`)
 
   return (
-    <div ref={hostRef} className="relative flex flex-col gap-3 text-sm">
+    <div ref={hostRef} className="relative flex h-full flex-col gap-3 text-sm">
       <div>
         <h1 className="text-xl font-bold tracking-tight">ItemsCRUD</h1>
         <p className="text-xs text-muted-foreground">
@@ -687,14 +687,14 @@ export function ItemsCRUD() {
             transform: panelOpen ? "translateX(0)" : "translateX(100%)",
           }}
         >
-          {/* 拖拉把手：左邊緣，最大寬度鎖在容器一半（見 handleResizeMove） */}
+          {/* 拖拉把手：與左側邊框線重疊的熱區，互動範圍與視覺邊界完全對齊（見 handleResizeMove） */}
           <button
             type="button"
             aria-label="拖曳調整面板寬度"
             onPointerDown={handleResizeStart}
             onPointerMove={handleResizeMove}
             onPointerUp={handleResizeEnd}
-            className="-ml-1 w-2 shrink-0 cursor-col-resize touch-none border-0 bg-transparent p-0 hover:bg-primary/20 active:bg-primary/30"
+            className="w-2 shrink-0 cursor-col-resize touch-none border-0 bg-transparent p-0 hover:bg-primary/20 active:bg-primary/30"
           />
 
           <div className="flex min-w-0 flex-1 flex-col">

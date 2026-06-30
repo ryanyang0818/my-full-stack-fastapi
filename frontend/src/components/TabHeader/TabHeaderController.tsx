@@ -32,7 +32,7 @@ export function TabHeaderController() {
   )
 
   return (
-    <div className="flex min-w-0 flex-col">
+    <div className="flex h-full min-w-0 flex-col">
       <div className="-mx-6 -mt-6 min-w-0 overflow-hidden md:-mx-8 md:-mt-8">
         <TabHeader
           tabs={renderTabs}
@@ -44,7 +44,8 @@ export function TabHeaderController() {
           onReorder={reorder}
         />
       </div>
-      <div className="w-full min-w-0 max-w-screen-2xl pt-4">
+      {/* Tab Content Area：撐滿剩餘高度，讓內部頁面（如 ItemsCRUD 的 Side Panel）能貼滿 */}
+      <div className="w-full min-w-0 max-w-screen-2xl flex-1 min-h-0 pt-4">
         <TabPageHost />
       </div>
     </div>
