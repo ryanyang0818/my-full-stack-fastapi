@@ -40,14 +40,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import {
+  CATEGORIES,
+  CURRENCY_OPTIONS,
+  HANDLERS,
   type ItemRow,
   type ItemStatus,
   MOCK_ITEMS,
   money,
+  PRIORITY_OPTIONS,
   STATUS_CONFIG,
   STATUS_ORDER,
+  TERMS,
   TODAY_STR,
 } from "./mockData"
 
@@ -150,10 +164,15 @@ export function ItemsCRUD() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(25)
-  const [dialog, setDialog] = useState<{
-    mode: "add" | "edit" | "delete"
+  // 新增/編輯：Slide Panel（Sheet）狀態；row 為 undefined 代表新增
+  const [panel, setPanel] = useState<{
+    mode: "add" | "edit"
     row?: ItemRow
   } | null>(null)
+  // 刪除：維持原本 Dialog 確認框；row 為 undefined 代表刪除目前已勾選的多筆
+  const [deleteTarget, setDeleteTarget] = useState<{ row?: ItemRow } | null>(
+    null,
+  )
 
   // 改變任一篩選條件時回到第一頁
   const resetPage = () => setPage(0)
@@ -267,7 +286,7 @@ export function ItemsCRUD() {
           <Button
             size="sm"
             className="h-8"
-            onClick={() => setDialog({ mode: "add" })}
+            onClick={() => setPanel({ mode: "add" })}
           >
             <Plus className="size-4" />
             新增
@@ -277,9 +296,7 @@ export function ItemsCRUD() {
             variant="outline"
             className="h-8"
             disabled={selected.size !== 1}
-            onClick={() =>
-              setDialog({ mode: "edit", row: singleSelectedRow() })
-            }
+            onClick={() => setPanel({ mode: "edit", row: singleSelectedRow() })}
           >
             <Pencil className="size-4" />
             編輯
@@ -289,7 +306,7 @@ export function ItemsCRUD() {
               size="sm"
               variant="destructive"
               className="h-8"
-              onClick={() => setDialog({ mode: "delete" })}
+              onClick={() => setDeleteTarget({})}
             >
               <Trash2 className="size-4" />
               刪除（{selected.size}）
@@ -462,18 +479,14 @@ export function ItemsCRUD() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() =>
-                                setDialog({ mode: "edit", row: r })
-                              }
+                              onClick={() => setPanel({ mode: "edit", row: r })}
                             >
                               <Pencil className="size-4" />
                               編輯
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               variant="destructive"
-                              onClick={() =>
-                                setDialog({ mode: "delete", row: r })
-                              }
+                              onClick={() => setDeleteTarget({ row: r })}
                             >
                               <Trash2 className="size-4" />
                               刪除
@@ -575,85 +588,236 @@ export function ItemsCRUD() {
         </div>
       </div>
 
-      {/* 新增 / 編輯 / 刪除 Dialog（示範用，不寫入資料） */}
+      {/* 刪除確認（示範用，不寫入資料） */}
       <Dialog
-        open={dialog !== null}
-        onOpenChange={(o) => !o && setDialog(null)}
+        open={deleteTarget !== null}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
       >
         <DialogContent className="sm:max-w-lg">
-          {dialog?.mode === "delete" ? (
-            <>
-              <DialogHeader>
-                <DialogTitle>刪除確認</DialogTitle>
-                <DialogDescription>
-                  {dialog.row
-                    ? `將刪除「${dialog.row.code}」。`
-                    : `將刪除已選取的項目。`}
-                  此為示範，不會真的刪除資料。
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">取消</Button>
-                </DialogClose>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    demoToast("刪除")
-                    setDialog(null)
-                  }}
-                >
-                  確認刪除
-                </Button>
-              </DialogFooter>
-            </>
-          ) : (
-            <>
-              <DialogHeader>
-                <DialogTitle>
-                  {dialog?.mode === "edit" ? "編輯項目" : "新增項目"}
-                </DialogTitle>
-                <DialogDescription>
-                  此為示範表單，儲存不會寫入資料。
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-3 py-2">
-                <Field label="編號" defaultValue={dialog?.row?.code} />
-                <Field label="名稱" defaultValue={dialog?.row?.name} />
-                <Field label="分類" defaultValue={dialog?.row?.category} />
-                <Field label="負責人" defaultValue={dialog?.row?.handler} />
-                <Field
-                  label="數量"
-                  defaultValue={dialog?.row ? String(dialog.row.qty) : ""}
-                />
-                <Field
-                  label="金額"
-                  defaultValue={dialog?.row ? String(dialog.row.amount) : ""}
-                />
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">取消</Button>
-                </DialogClose>
-                <Button
-                  onClick={() => {
-                    demoToast("儲存")
-                    setDialog(null)
-                  }}
-                >
-                  儲存
-                </Button>
-              </DialogFooter>
-            </>
-          )}
+          <DialogHeader>
+            <DialogTitle>刪除確認</DialogTitle>
+            <DialogDescription>
+              {deleteTarget?.row
+                ? `將刪除「${deleteTarget.row.code}」。`
+                : `將刪除已選取的項目。`}
+              此為示範，不會真的刪除資料。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">取消</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                demoToast("刪除")
+                setDeleteTarget(null)
+              }}
+            >
+              確認刪除
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 新增 / 編輯：右側 Slide Panel（示範用，不寫入資料、不驗證） */}
+      <Sheet open={panel !== null} onOpenChange={(o) => !o && setPanel(null)}>
+        <SheetContent
+          side="right"
+          className="w-full gap-0 overflow-y-auto sm:max-w-md"
+        >
+          <SheetHeader>
+            <SheetTitle>
+              {panel?.mode === "edit" ? "編輯項目" : "新增項目"}
+            </SheetTitle>
+            <SheetDescription>
+              此為示範表單，儲存不會寫入資料。
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="flex flex-col gap-5 px-4 pb-4">
+            <FormSection title="基本資料">
+              <Field label="編號" defaultValue={panel?.row?.code} disabled />
+              <Field label="名稱" defaultValue={panel?.row?.name} />
+              <SelectField
+                label="分類"
+                defaultValue={panel?.row?.category}
+                options={CATEGORIES.map((v) => ({ value: v, label: v }))}
+              />
+              <SelectField
+                label="負責人"
+                defaultValue={panel?.row?.handler}
+                options={HANDLERS.map((v) => ({ value: v, label: v }))}
+              />
+              <SelectField
+                label="優先度"
+                defaultValue={panel?.row?.priority ?? "normal"}
+                options={PRIORITY_OPTIONS}
+              />
+              <SelectField
+                label="狀態"
+                defaultValue={panel?.row?.status ?? "draft"}
+                options={STATUS_ORDER.map((s) => ({
+                  value: s,
+                  label: STATUS_CONFIG[s].label,
+                }))}
+              />
+            </FormSection>
+
+            <FormSection title="日期與聯絡">
+              <DateField
+                label="建立日期"
+                defaultValue={panel?.row?.createdDate.replace(/\//g, "-")}
+              />
+              <DateField
+                label="預計到貨"
+                defaultValue={panel?.row?.dueDate.replace(/\//g, "-")}
+              />
+              <DateField
+                label="預計出貨日"
+                defaultValue={panel?.row?.expectedShipDate}
+              />
+              <Field label="聯絡電話" defaultValue={panel?.row?.contactPhone} />
+            </FormSection>
+
+            <FormSection title="金額與條件">
+              <Field
+                label="數量"
+                type="number"
+                defaultValue={panel?.row ? String(panel.row.qty) : ""}
+              />
+              <SelectField
+                label="幣別"
+                defaultValue={panel?.row?.currency ?? "TWD"}
+                options={CURRENCY_OPTIONS}
+              />
+              <Field
+                label="金額"
+                type="number"
+                defaultValue={panel?.row ? String(panel.row.amount) : ""}
+              />
+              <SelectField
+                label="付款條件"
+                defaultValue={panel?.row?.terms}
+                options={TERMS.map((v) => ({ value: v, label: v }))}
+              />
+              <Field
+                label="稅率 (%)"
+                type="number"
+                defaultValue={panel?.row ? String(panel.row.taxRate) : ""}
+              />
+              <Field
+                label="折扣 (%)"
+                type="number"
+                defaultValue={panel?.row ? String(panel.row.discount) : ""}
+              />
+            </FormSection>
+
+            <FormSection title="其他">
+              <TextareaField
+                label="交貨地址"
+                defaultValue={panel?.row?.deliveryAddress}
+                span
+              />
+              <TextareaField
+                label="備註"
+                defaultValue={panel?.row?.remark}
+                span
+              />
+            </FormSection>
+          </div>
+
+          <SheetFooter className="flex-row justify-end border-t pt-4">
+            <SheetClose asChild>
+              <Button variant="outline">取消</Button>
+            </SheetClose>
+            <Button
+              onClick={() => {
+                demoToast("儲存")
+                setPanel(null)
+              }}
+            >
+              儲存
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
 
-// 示範表單欄位：label + 唯讀預填 input
+// 表單分組區塊：標題 + 雙欄 grid，組與組間用上邊框分隔
+function FormSection({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-3 border-t pt-4 first:border-t-0 first:pt-0">
+      <h3 className="text-xs font-semibold text-muted-foreground">{title}</h3>
+      <div className="grid grid-cols-2 gap-3">{children}</div>
+    </div>
+  )
+}
+
+// 文字／數字欄位：label + input
 function Field({
+  label,
+  defaultValue,
+  type = "text",
+  disabled,
+}: {
+  label: string
+  defaultValue?: string
+  type?: "text" | "number"
+  disabled?: boolean
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <Input
+        type={type}
+        defaultValue={defaultValue}
+        disabled={disabled}
+        className="h-8"
+      />
+    </div>
+  )
+}
+
+// 下拉選單欄位：label + Select（未受控，僅示範預填值）
+function SelectField({
+  label,
+  defaultValue,
+  options,
+}: {
+  label: string
+  defaultValue?: string
+  options: { value: string; label: string }[]
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <Select defaultValue={defaultValue}>
+        <SelectTrigger size="sm" className="h-8 w-full">
+          <SelectValue placeholder="請選擇" />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  )
+}
+
+// 日期欄位：label + 原生 date input（瀏覽器原生日期選擇器，不需額外套件）
+function DateField({
   label,
   defaultValue,
 }: {
@@ -663,7 +827,29 @@ function Field({
   return (
     <div className="flex flex-col gap-1">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <Input defaultValue={defaultValue} className="h-8" />
+      <Input type="date" defaultValue={defaultValue} className="h-8" />
+    </div>
+  )
+}
+
+// 多行文字欄位：label + textarea（沿用 Input 同款邊框樣式）；span 時跨兩欄
+function TextareaField({
+  label,
+  defaultValue,
+  span,
+}: {
+  label: string
+  defaultValue?: string
+  span?: boolean
+}) {
+  return (
+    <div className={cn("flex flex-col gap-1", span && "col-span-2")}>
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <textarea
+        defaultValue={defaultValue}
+        rows={2}
+        className="border-input dark:bg-input/30 placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full min-w-0 resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+      />
     </div>
   )
 }
