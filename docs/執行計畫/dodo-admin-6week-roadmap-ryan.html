@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dodo Admin｜6 週落地路線圖</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-soft: #eef6fb;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #dbe5ee;
+      --primary: #0369a1;
+      --primary-dark: #075985;
+      --accent: #0f766e;
+      --gold: #a16207;
+      --warning: #b45309;
+      --danger: #b91c1c;
+      --ok: #15803d;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius: 10px;
+      --max: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(219, 229, 238, 0.9);
+      background: rgba(248, 250, 252, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 750; }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .sign {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .section {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 56px 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before { content: ""; width: 22px; height: 2px; background: var(--primary); }
+
+    h1, h2, h3 { margin: 0; line-height: 1.25; }
+    h1 { font-size: clamp(30px, 4.6vw, 50px); font-weight: 850; max-width: 880px; }
+    h2 { font-size: clamp(24px, 3.2vw, 34px); font-weight: 820; }
+    h3 { font-size: 17px; font-weight: 800; }
+    p { margin: 0; }
+
+    .lead { max-width: 860px; margin-top: 18px; color: var(--muted); font-size: 18px; }
+
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      margin-top: 22px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+    .stat-card { padding: 22px; }
+    .stat-card h3 { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+    .dot.ok { background: var(--ok); }
+    .dot.warn { background: var(--gold); }
+    .dot.bad { background: var(--danger); }
+
+    .mods { margin: 6px 0 0; padding: 0; list-style: none; }
+    .mods li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 14px;
+    }
+    .mods li:last-child { border-bottom: 0; }
+    .mods .tag {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .tag.done { background: #dcfce7; color: var(--ok); }
+    .tag.part { background: #fef9c3; color: var(--gold); }
+    .tag.stub { background: #fee2e2; color: var(--danger); }
+
+    .diagram-wrap {
+      margin-top: 22px;
+      padding: 18px;
+      overflow-x: auto;
+    }
+    svg.er { display: block; width: 100%; min-width: 720px; height: auto; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .swatch { width: 22px; height: 0; border-top: 2px solid var(--muted); }
+    .swatch.cross { border-top: 2px dashed var(--accent); }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .flow-card {
+      flex: 1 1 240px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px 18px;
+    }
+    .flow-card .role { font-weight: 800; }
+    .flow-card .arrow { color: var(--muted); font-weight: 700; margin: 6px 0; }
+    .res-ok { color: var(--ok); font-weight: 800; }
+    .res-no { color: var(--danger); font-weight: 800; }
+
+    .redlines { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 18px; }
+    .redline {
+      border: 1px solid #fecaca;
+      border-left: 4px solid var(--danger);
+      border-radius: 8px;
+      background: #fff5f5;
+      padding: 16px 18px;
+    }
+    .redline h3 { color: var(--danger); font-size: 15px; margin-bottom: 8px; }
+    .redline p { color: #7f1d1d; font-size: 13.5px; }
+
+    .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 22px; }
+    .tl-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--primary);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tl-card.p-data { border-top-color: var(--primary); }
+    .tl-card.p-config { border-top-color: var(--accent); }
+    .tl-card.p-money { border-top-color: var(--gold); }
+    .tl-card.p-perm { border-top-color: var(--warning); }
+
+    .tl-week {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 850;
+      color: var(--primary-dark);
+    }
+    .tl-card.p-config .tl-week { color: var(--accent); }
+    .tl-card.p-money .tl-week { color: var(--gold); }
+    .tl-card.p-perm .tl-week { color: var(--warning); }
+    .tl-theme { font-weight: 800; font-size: 14.5px; line-height: 1.3; }
+    .tl-list { margin: 0; padding-left: 16px; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+    .tl-exit { margin-top: auto; font-size: 12px; color: var(--ink); border-top: 1px dashed var(--line); padding-top: 8px; }
+    .tl-exit b { color: var(--ok); }
+    .risk {
+      align-self: flex-start;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--warning);
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 999px;
+      padding: 2px 8px;
+    }
+
+    .cuts {
+      margin-top: 18px;
+      padding: 16px 20px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .cuts b { color: var(--ink); }
+
+    .note { color: var(--muted); font-size: 14px; }
+
+    .footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .footer .section { padding: 26px 24px; }
+
+    @media (max-width: 920px) {
+      .grid-2, .redlines { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .timeline { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <span class="brand-mark">DA</span>
+        <span>Dodo Admin · 6 週路線圖</span>
+      </div>
+      <span class="sign">簽名：Ryan（ryanyang0818）· 協作 Claude Opus 4.8 · 2026-06-27 · Draft v1</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- 定調 -->
+    <section class="section">
+      <p class="eyebrow">Execution roadmap</p>
+      <h1>用 6 週，把骨架變成可對客 demo 的痛點流程。</h1>
+      <p class="lead">
+        地基層（Auth／CI／Docker／User Management）已成熟；缺的是「對外展示層」與三支柱中的兩支——
+        Config-driven 與 Role Permission。本路線圖以「庫存 + 客戶銷售」兩個業務域為載體，
+        一次點亮 Dashboard、Data Tables、Role Permission，並驗證 config 骨架能吃下第二個業務域。
+      </p>
+      <div class="meta-strip">
+        <span class="chip">範圍：6 週壓縮版</span>
+        <span class="chip">載體：庫存 + 客戶銷售</span>
+        <span class="chip">執行：單兵 + 同時跑訪談</span>
+        <span class="chip">依據：5 份程式碼稽核 + 對抗驗證</span>
+      </div>
+    </section>
+
+    <!-- 現況 -->
+    <section class="section" style="padding-top: 0;">
+      <p class="eyebrow">Where the code stands</p>
+      <h2>程式碼現況：地基穩，展示層空。</h2>
+      <div class="grid-2" style="margin-top: 22px;">
+        <article class="panel stat-card">
+          <h3><span class="dot ok"></span>地基層 · 成熟可信</h3>
+          <p class="note">Auth（JWT / Argon2 / timing 防護 / 找回密碼）、CI 三條 workflow + 後端覆蓋率 90%、Docker 一鍵起、User Management 前後端皆完整。</p>
+        </article>
+        <article class="panel stat-card">
+          <h3><span class="dot bad"></span>展示層 · 基本空殼</h3>
+          <p class="note">Dashboard 佔位、ERP Demo 只有 Item 佔位、Data Tables/Forms 手刻且無查詢、RBAC 有模型無 enforcement、seed 未自動化。</p>
+        </article>
+      </div>
+
+      <article class="panel stat-card" style="margin-top: 18px;">
+        <h3>六大模組真實狀態</h3>
+        <ul class="mods">
+          <li><span class="dot ok"></span>User Management<span class="tag done">DONE</span></li>
+          <li><span class="dot warn"></span>Data Tables<span class="note" style="margin-left:10px;">共用殼但手刻、無搜尋/篩選/排序</span><span class="tag part">PARTIAL</span></li>
+          <li><span class="dot warn"></span>Forms<span class="note" style="margin-left:10px;">欄位散在 columns / Add / Edit 三處</span><span class="tag part">PARTIAL</span></li>
+          <li><span class="dot bad"></span>Dashboard<span class="note" style="margin-left:10px;">33 行靜態歡迎詞</span><span class="tag stub">STUB</span></li>
+          <li><span class="dot bad"></span>Role Permission<span class="note" style="margin-left:10px;">有模型，但 API 無 enforcement、無管理 UI</span><span class="tag stub">STUB</span></li>
+          <li><span class="dot bad"></span>ERP Demo<span class="note" style="margin-left:10px;">只有 Item(title/description)</span><span class="tag stub">STUB</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- 資料模型 -->
+    <section class="section" style="padding-top: 0;">
+      <p class="eyebrow">Target data model</p>
+      <h2>兩業務域，一個外鍵把它們串起來。</h2>
+      <p class="lead">庫存域證明「關聯 + 查詢」；客戶銷售域補上「錢 + 主從關聯」。關鍵在 <b>SalesOrderItem.product_id → Product</b>：客戶下訂單，明細直接引用庫存商品。</p>
+
+      <article class="panel diagram-wrap">
+        <svg class="er" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="庫存與客戶銷售資料模型關聯圖">
+          <defs>
+            <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L7,3 L0,6 Z" fill="#64748b" />
+            </marker>
+            <marker id="arrow-cross" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L7,3 L0,6 Z" fill="#0f766e" />
+            </marker>
+          </defs>
+
+          <!-- 域底板 -->
+          <rect x="16" y="46" width="446" height="478" rx="12" fill="#f1f5f9" stroke="#dbe5ee" />
+          <rect x="498" y="46" width="446" height="478" rx="12" fill="#f0fdfa" stroke="#cbeae4" />
+          <text x="34" y="74" font-size="14" font-weight="800" fill="#075985">庫存域 · Inventory</text>
+          <text x="516" y="74" font-size="14" font-weight="800" fill="#0f766e">客戶銷售域 · Sales</text>
+
+          <!-- 連線（先畫線，box 蓋上） -->
+          <!-- Stock -> Product（走左側邊距，避開 Warehouse） -->
+          <path d="M50 376 C 30 360, 30 156, 50 140" fill="none" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" />
+          <!-- Stock -> Warehouse -->
+          <path d="M120 330 L120 300" fill="none" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" />
+          <!-- SalesOrder -> Customer -->
+          <path d="M720 214 L720 178" fill="none" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" />
+          <!-- SalesOrderItem -> SalesOrder -->
+          <path d="M650 344 L650 314" fill="none" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" />
+          <!-- 跨域 SalesOrderItem.product_id -> Product（走中央間隙） -->
+          <path d="M532 388 C 480 388, 480 134, 412 134" fill="none" stroke="#0f766e" stroke-width="2.2" stroke-dasharray="7 5" marker-end="url(#arrow-cross)" />
+          <text x="476" y="250" font-size="11.5" font-weight="800" fill="#0f766e" text-anchor="middle">跨域</text>
+
+          <!-- Product -->
+          <g>
+            <rect x="50" y="90" width="362" height="106" rx="8" fill="#ffffff" stroke="#94a3b8" />
+            <rect x="50" y="90" width="362" height="26" rx="8" fill="#e0f2fe" />
+            <text x="64" y="108" font-size="13.5" font-weight="800" fill="#0c4a6e">Product · 商品主檔</text>
+            <text x="64" y="134" font-size="12" fill="#334155">sku　name　category</text>
+            <text x="64" y="154" font-size="12" fill="#334155">unit　safety_stock</text>
+            <text x="64" y="178" font-size="11.5" fill="#64748b">— 被 Stock 與 訂單明細 共同引用 —</text>
+          </g>
+
+          <!-- Warehouse -->
+          <g>
+            <rect x="50" y="226" width="362" height="74" rx="8" fill="#ffffff" stroke="#94a3b8" />
+            <rect x="50" y="226" width="362" height="26" rx="8" fill="#e0f2fe" />
+            <text x="64" y="244" font-size="13.5" font-weight="800" fill="#0c4a6e">Warehouse · 倉庫主檔</text>
+            <text x="64" y="276" font-size="12" fill="#334155">code　name　location</text>
+          </g>
+
+          <!-- Stock -->
+          <g>
+            <rect x="50" y="330" width="362" height="92" rx="8" fill="#ffffff" stroke="#94a3b8" />
+            <rect x="50" y="330" width="362" height="26" rx="8" fill="#e2e8f0" />
+            <text x="64" y="348" font-size="13.5" font-weight="800" fill="#334155">Stock · 庫存（關聯）</text>
+            <text x="64" y="374" font-size="12" fill="#334155">product_id ↗　warehouse_id ↗</text>
+            <text x="64" y="396" font-size="12" fill="#334155">qty</text>
+          </g>
+
+          <!-- Customer -->
+          <g>
+            <rect x="532" y="90" width="362" height="88" rx="8" fill="#ffffff" stroke="#5ea99c" />
+            <rect x="532" y="90" width="362" height="26" rx="8" fill="#ccfbf1" />
+            <text x="546" y="108" font-size="13.5" font-weight="800" fill="#115e59">Customer · 客戶主檔</text>
+            <text x="546" y="134" font-size="12" fill="#334155">code　name　contact</text>
+            <text x="546" y="156" font-size="12" fill="#334155">phone　tax_id（統編）</text>
+          </g>
+
+          <!-- SalesOrder -->
+          <g>
+            <rect x="532" y="214" width="362" height="100" rx="8" fill="#ffffff" stroke="#5ea99c" />
+            <rect x="532" y="214" width="362" height="26" rx="8" fill="#ccfbf1" />
+            <text x="546" y="232" font-size="13.5" font-weight="800" fill="#115e59">SalesOrder · 銷售訂單</text>
+            <text x="546" y="258" font-size="12" fill="#334155">order_no　customer_id ↗</text>
+            <text x="546" y="278" font-size="12" fill="#334155">order_date　status（純欄位）</text>
+            <text x="546" y="298" font-size="12" fill="#334155">total_amount（唯讀加總）</text>
+          </g>
+
+          <!-- SalesOrderItem -->
+          <g>
+            <rect x="532" y="344" width="362" height="100" rx="8" fill="#ffffff" stroke="#5ea99c" />
+            <rect x="532" y="344" width="362" height="26" rx="8" fill="#d1fae5" />
+            <text x="546" y="362" font-size="13.5" font-weight="800" fill="#115e59">SalesOrderItem · 訂單明細</text>
+            <text x="546" y="388" font-size="12" fill="#334155">order_id ↗　product_id ↗（跨域）</text>
+            <text x="546" y="408" font-size="12" fill="#334155">qty　unit_price</text>
+            <text x="546" y="428" font-size="12" fill="#334155">subtotal = qty × unit_price（純展示）</text>
+          </g>
+        </svg>
+
+        <div class="legend">
+          <span><i class="swatch"></i>同域外鍵</span>
+          <span><i class="swatch cross"></i>跨域引用（訂單明細 → 庫存商品）</span>
+          <span>↗ = 外鍵</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- 權限動線 -->
+    <section class="section" style="padding-top: 0;">
+      <p class="eyebrow">Permission story</p>
+      <h2>權限故事：域級授權，真的擋得住。</h2>
+      <p class="lead">複用既有 seed 的角色，不新建。授權收在域級 <b>require_menu</b> dependency（W6 啟用），demo 中切換角色會看到不同選單、不同可存取資源。</p>
+      <div class="flow">
+        <div class="flow-card">
+          <div class="role">warehouse_manager · 倉管主管</div>
+          <div class="arrow">→ /inventory/*</div>
+          <div class="res-ok">✓ 全可見可操作</div>
+        </div>
+        <div class="flow-card">
+          <div class="role">sales_manager · 業務主管</div>
+          <div class="arrow">→ /sales/*</div>
+          <div class="res-ok">✓ 全可見可操作</div>
+        </div>
+        <div class="flow-card">
+          <div class="role">sales_staff · 業務人員</div>
+          <div class="arrow">→ /inventory/*（跨域）</div>
+          <div class="res-no">✗ 403 擋下</div>
+        </div>
+        <div class="flow-card">
+          <div class="role">warehouse_staff · 倉管人員</div>
+          <div class="arrow">→ /sales/*（跨域）</div>
+          <div class="res-no">✗ 403 擋下</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- YAGNI 紅線 -->
+    <section class="section" style="padding-top: 0;">
+      <p class="eyebrow">Scope red-lines</p>
+      <h2>三條不可失守的 YAGNI 紅線。</h2>
+      <div class="redlines">
+        <article class="redline">
+          <h3>金額不滑進會計</h3>
+          <p>單一幣別 TWD、無稅率欄、subtotal = qty × unit_price 純展示、total_amount 唯讀加總、tax_id 只存不算。</p>
+        </article>
+        <article class="redline">
+          <h3>狀態不變簽核</h3>
+          <p>status 是自由可改純欄位，無狀態機、無轉移守衛、無鎖定。不可逆邏輯留未來。</p>
+        </article>
+        <article class="redline">
+          <h3>下單不碰庫存</h3>
+          <p>下單不讀 Stock.qty、不校驗、不警告；Product 下拉只取 name / sku。自動扣庫存屬複雜商業規則，排除。</p>
+        </article>
+      </div>
+      <p class="note" style="margin-top: 14px;">另一條架構紀律：新域 CRUD <b>不抄 owner_id 列級隔離</b>，授權統一收在域級 require_menu，避免兩套授權心智打架。</p>
+    </section>
+
+    <!-- 時間軸 -->
+    <section class="section" style="padding-top: 0;">
+      <p class="eyebrow">6-week timeline</p>
+      <h2>6 週時間軸。</h2>
+      <div class="timeline">
+        <article class="tl-card p-data">
+          <span class="tl-week">W1</span>
+          <span class="tl-theme">地基 + 庫存主檔 + 權限介面早定</span>
+          <ul class="tl-list">
+            <li>seed 串進 prestart（冪等已驗）</li>
+            <li>Product / Warehouse CRUD</li>
+            <li>no-op require_menu() + 查詢契約</li>
+          </ul>
+          <p class="tl-exit"><b>Exit：</b>全新環境 up 後選單樹自動出現、可登入</p>
+        </article>
+
+        <article class="tl-card p-data">
+          <span class="tl-week">W2</span>
+          <span class="tl-theme">庫存查詢 + 種子</span>
+          <ul class="tl-list">
+            <li>Stock 關聯表</li>
+            <li>q + 單欄 sort + 真分頁</li>
+            <li>庫存 demo 種子（&gt;1 頁）</li>
+          </ul>
+          <p class="tl-exit"><b>Exit：</b>Swagger 帶參數回正確子集 + total</p>
+        </article>
+
+        <article class="tl-card p-config">
+          <span class="tl-week">W3</span>
+          <span class="risk">⚠ 最高風險週</span>
+          <span class="tl-theme">ResourceConfig 試點（夠用就好）</span>
+          <ul class="tl-list">
+            <li>第一版只 text/number/select/date</li>
+            <li>Stock 查詢前端 toolbar</li>
+            <li>重生 sdk + tsc 全綠</li>
+          </ul>
+          <p class="tl-exit"><b>Exit：</b>改一欄只動一處；列表可搜尋翻頁</p>
+        </article>
+
+        <article class="tl-card p-config">
+          <span class="tl-week">W4</span>
+          <span class="tl-theme">庫存點亮 + 客戶主檔</span>
+          <ul class="tl-list">
+            <li>config 補 relation 型別</li>
+            <li>Customer 用 config 套出（證明複用）</li>
+            <li>Dashboard 精簡 1 張 KPI 卡</li>
+          </ul>
+          <p class="tl-exit"><b>Exit：</b>新業務域 = 動 config</p>
+        </article>
+
+        <article class="tl-card p-money">
+          <span class="tl-week">W5</span>
+          <span class="tl-theme">銷售訂單 master-detail（錢）</span>
+          <ul class="tl-list">
+            <li>SalesOrder + 明細（守三紅線）</li>
+            <li>訂單頭 + 明細 bespoke 頁</li>
+            <li>明細引用庫存商品、算總額</li>
+          </ul>
+          <p class="tl-exit"><b>Exit：</b>可建含多筆明細訂單、總額正確</p>
+        </article>
+
+        <article class="tl-card p-perm">
+          <span class="tl-week">W6</span>
+          <span class="tl-theme">權限可信化 + 交付收尾</span>
+          <ul class="tl-list">
+            <li>require_menu 換真 → 跨域 403</li>
+            <li>最小角色指派 UI</li>
+            <li>品牌化 + README + 業務 E2E</li>
+          </ul>
+          <p class="tl-exit"><b>Exit：</b>跨域直打回 403；E2E 綠燈</p>
+        </article>
+      </div>
+
+      <div class="cuts">
+        <b>6 週壓縮取捨</b>（相對 7 週版）：砍 StockAdjustment · Dashboard KPI 精簡為 1 張卡 · 業務 E2E 收斂為 1 條 happy path + 1 條跨角色 403。
+        <b>不砍</b> seed→prestart 與 require_menu——後者是相對 tiangolo 模板的唯一硬差異化。
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="section">
+      <p>Dodo Admin 6 週落地路線圖 · Draft v1 · 中性內部規劃文件。簽名：Ryan（ryanyang0818）· 協作 Claude Opus 4.8 · 2026-06-27（Asia/Taipei）。完整可執行版見 dodo-admin-6week-roadmap-ryan.md。</p>
+    </div>
+  </footer>
+</body>
+</html>

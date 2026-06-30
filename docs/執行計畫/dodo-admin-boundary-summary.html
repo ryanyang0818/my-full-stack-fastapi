@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dodo Admin 產品邊界收斂</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --paper: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #dbe5ee;
+      --blue: #0369a1;
+      --blue-soft: #e0f2fe;
+      --teal: #0f766e;
+      --teal-soft: #ccfbf1;
+      --amber: #b45309;
+      --amber-soft: #fef3c7;
+      --slate-soft: #f1f5f9;
+      --shadow: 0 20px 55px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+      --max: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(219, 229, 238, 0.92);
+      background: rgba(248, 250, 252, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      gap: 22px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: white;
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .section {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 68px 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.78fr);
+      gap: 36px;
+      align-items: center;
+      padding-top: 78px;
+      padding-bottom: 54px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 16px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--blue);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      font-size: clamp(38px, 6vw, 70px);
+      font-weight: 850;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 820;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.72;
+    }
+
+    .hero-note {
+      margin-top: 26px;
+      border-left: 4px solid var(--blue);
+      background: var(--paper);
+      padding: 18px 20px;
+      color: var(--ink);
+      font-weight: 780;
+      box-shadow: var(--shadow);
+    }
+
+    .panel,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .panel {
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .decision-card {
+      padding: 22px;
+      border-top: 4px solid var(--blue);
+    }
+
+    .decision-card.teal {
+      border-top-color: var(--teal);
+    }
+
+    .decision-card.amber {
+      border-top-color: var(--amber);
+    }
+
+    .decision-card p,
+    .card p,
+    .panel p {
+      color: var(--muted);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(280px, 0.28fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 26px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin: 5px 6px 0 0;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .decision-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      margin-bottom: 14px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .decision-label.teal {
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .decision-label.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 0 0 1px var(--line);
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eaf2f8;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      position: relative;
+      margin: 10px 0;
+      padding-left: 22px;
+      color: var(--muted);
+    }
+
+    .list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--blue);
+    }
+
+    .svg-card {
+      padding: 18px;
+    }
+
+    .svg-card svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .quote {
+      border-left: 4px solid var(--teal);
+      background: var(--paper);
+      padding: 24px 28px;
+      font-size: 22px;
+      font-weight: 780;
+      line-height: 1.55;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer .section {
+      padding-top: 28px;
+      padding-bottom: 28px;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .section-heading,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .section {
+        padding: 52px 18px;
+      }
+
+      .hero {
+        padding-top: 54px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">DA</span>
+        <span>Dodo Admin Boundary</span>
+      </div>
+      <nav class="nav" aria-label="頁面導覽">
+        <a href="#decisions">決策</a>
+        <a href="#erp">ERP 邊界</a>
+        <a href="#forms">Forms 邊界</a>
+        <a href="#dev">開發模式</a>
+        <a href="#next">待討論</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section hero">
+      <div>
+        <p class="eyebrow">Product boundary consolidation</p>
+        <h1>Dodo Admin 的邊界：本體是後台骨架，價值來自落地能力。</h1>
+        <p class="lead">
+          這份頁面收攏目前討論結果：Dodo Admin 不把自己定義為完整 ERP，也不走 No Code 表單設計器路線。
+          它要呈現的是高度客製的畫面，以及可重複使用的後台開發模式。
+        </p>
+        <div class="hero-note">
+          核心結論：畫面要像客製系統一樣貼近情境，底層要像產品一樣可重複、可維護、可擴充。
+        </div>
+      </div>
+
+      <aside class="panel svg-card" aria-label="產品本體與展示案例示意圖">
+        <svg viewBox="0 0 620 440" role="img" aria-labelledby="svg-title svg-desc">
+          <title id="svg-title">Dodo Admin 本體與 Demo 分層</title>
+          <desc id="svg-desc">圖示 Dodo Admin Core 位於中央，向外延伸到 ERP Demo、CMS Demo、CRM Demo 與客製頁面。</desc>
+          <rect x="20" y="20" width="580" height="400" rx="18" fill="#f8fafc" stroke="#dbe5ee" />
+          <rect x="185" y="140" width="250" height="120" rx="16" fill="#0f172a" />
+          <text x="310" y="190" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800">Dodo Admin Core</text>
+          <text x="310" y="224" text-anchor="middle" fill="#cbd5e1" font-size="15">Dashboard / User / Permission</text>
+          <line x1="310" y1="140" x2="310" y2="76" stroke="#94a3b8" stroke-width="2" />
+          <line x1="435" y1="200" x2="534" y2="200" stroke="#94a3b8" stroke-width="2" />
+          <line x1="310" y1="260" x2="310" y2="338" stroke="#94a3b8" stroke-width="2" />
+          <line x1="185" y1="200" x2="88" y2="200" stroke="#94a3b8" stroke-width="2" />
+          <rect x="224" y="44" width="172" height="52" rx="12" fill="#e0f2fe" stroke="#7dd3fc" />
+          <text x="310" y="76" text-anchor="middle" fill="#075985" font-size="16" font-weight="800">ERP Demo</text>
+          <rect x="454" y="174" width="126" height="52" rx="12" fill="#ccfbf1" stroke="#5eead4" />
+          <text x="517" y="206" text-anchor="middle" fill="#0f766e" font-size="16" font-weight="800">CMS Demo</text>
+          <rect x="230" y="324" width="160" height="52" rx="12" fill="#fef3c7" stroke="#fcd34d" />
+          <text x="310" y="356" text-anchor="middle" fill="#92400e" font-size="16" font-weight="800">CRM Demo</text>
+          <rect x="42" y="174" width="122" height="52" rx="12" fill="#f1f5f9" stroke="#cbd5e1" />
+          <text x="103" y="206" text-anchor="middle" fill="#334155" font-size="16" font-weight="800">客製頁面</text>
+        </svg>
+      </aside>
+    </section>
+
+    <section class="section" id="decisions">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Current decisions</p>
+          <h2>目前已經定下來的產品邊界。</h2>
+        </div>
+        <p>
+          這些不是最終 PRD，而是接下來避免範圍失控的工作假設。
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card decision-card">
+          <span class="decision-label">決策 1</span>
+          <h3>選 C，不選 B</h3>
+          <p style="margin-top: 10px;">Dodo Admin 本體是通用後台骨架；ERP 只是 Demo / 樣板，不是產品主身份。</p>
+        </article>
+        <article class="card decision-card teal">
+          <span class="decision-label teal">決策 2</span>
+          <h3>Forms 選 C</h3>
+          <p style="margin-top: 10px;">不做拖拉式表單設計器，也不把所有畫面限制在設定檔生成。Demo 畫面可以客製。</p>
+        </article>
+        <article class="card decision-card amber">
+          <span class="decision-label amber">決策 3</span>
+          <h3>標準化在底層</h3>
+          <p style="margin-top: 10px;">單表 CRUD、表格、表單送出、驗證、權限、資料溝通可以沉澱成模式。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="erp">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Boundary 01</p>
+          <h2>Dodo Admin 不承諾完整 ERP 產業邏輯。</h2>
+        </div>
+        <p>
+          這是重要風險控管：目前真正掌握的是後台系統落地能力，不是庫存、採購、會計、BOM、排程等完整 ERP 知識。
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="panel">
+          <h3>選 B 會變成什麼？</h3>
+          <ul class="list">
+            <li>產品本體會變成一套小型 ERP。</li>
+            <li>客戶會期待採購、庫存、工單、出貨、會計等完整流程。</li>
+            <li>產品會被特定產業知識拖住，開發與顧問壓力快速升高。</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>選 C 的正確定義</h3>
+          <ul class="list">
+            <li>Dodo Admin 本體是後台骨架。</li>
+            <li>ERP Demo 用來展示小型製造 / 傳產情境。</li>
+            <li>Demo 可以變成樣板，但不代表承諾完整 ERP 解決方案。</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="quote" style="margin-top: 22px;">
+        Dodo Admin 不提供完整 ERP 解決方案，而是提供一套可以支撐 ERP-like 情境的後台骨架。
+      </div>
+    </section>
+
+    <section class="section" id="forms">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Boundary 02</p>
+          <h2>Forms 不走 No Code，也不把畫面綁死在設定檔。</h2>
+        </div>
+        <p>
+          你要呈現的是系統很貼近場景、畫面很有客製感；如果所有畫面都由設定檔產生，表現力會被限制。
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>選項</th>
+            <th>做法</th>
+            <th>目前判斷</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A：No Code 表單設計器</td>
+            <td>拖拉欄位、即時產生表單。</td>
+            <td>第一階段不做，範圍太大，容易變成平台競賽。</td>
+          </tr>
+          <tr>
+            <td>B：設定檔驅動所有表單</td>
+            <td>用 config 自動產生表單 UI。</td>
+            <td>暫不主打，畫面容易受到限制。</td>
+          </tr>
+          <tr>
+            <td>C：客製畫面 + 可沉澱模式</td>
+            <td>畫面依 Demo / 客戶情境客製，底層模式共用。</td>
+            <td><strong>目前選擇。</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="panel svg-card" style="margin-top: 22px;" aria-label="客製畫面與標準底層示意圖">
+        <svg viewBox="0 0 920 360" role="img" aria-labelledby="ui-title ui-desc">
+          <title id="ui-title">客製畫面與標準化底層</title>
+          <desc id="ui-desc">上層是客製畫面，下層是 CRUD、Table、Form、Permission 和 API Pattern。</desc>
+          <rect x="20" y="24" width="880" height="312" rx="18" fill="#f8fafc" stroke="#dbe5ee" />
+          <text x="54" y="68" fill="#0f172a" font-size="22" font-weight="800">表現層：每個畫面都可以像客製系統</text>
+          <rect x="54" y="94" width="250" height="92" rx="12" fill="#ffffff" stroke="#bfdbfe" />
+          <text x="179" y="132" text-anchor="middle" fill="#075985" font-size="18" font-weight="800">ERP Demo 畫面</text>
+          <text x="179" y="158" text-anchor="middle" fill="#64748b" font-size="13">情境化表單 / 狀態卡 / 列表</text>
+          <rect x="335" y="94" width="250" height="92" rx="12" fill="#ffffff" stroke="#99f6e4" />
+          <text x="460" y="132" text-anchor="middle" fill="#0f766e" font-size="18" font-weight="800">CMS-like 畫面</text>
+          <text x="460" y="158" text-anchor="middle" fill="#64748b" font-size="13">內容列表 / 編輯 / 發布狀態</text>
+          <rect x="616" y="94" width="250" height="92" rx="12" fill="#ffffff" stroke="#fde68a" />
+          <text x="741" y="132" text-anchor="middle" fill="#92400e" font-size="18" font-weight="800">CRM-like 畫面</text>
+          <text x="741" y="158" text-anchor="middle" fill="#64748b" font-size="13">客戶資料 / 追蹤 / 責任人</text>
+          <line x1="460" y1="198" x2="460" y2="232" stroke="#94a3b8" stroke-width="2" />
+          <text x="54" y="246" fill="#0f172a" font-size="22" font-weight="800">開發層：底層模式產品化</text>
+          <g>
+            <rect x="54" y="270" width="136" height="42" rx="10" fill="#0f172a" />
+            <text x="122" y="297" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">CRUD</text>
+            <rect x="211" y="270" width="136" height="42" rx="10" fill="#0f172a" />
+            <text x="279" y="297" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">Table</text>
+            <rect x="368" y="270" width="136" height="42" rx="10" fill="#0f172a" />
+            <text x="436" y="297" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">Form</text>
+            <rect x="525" y="270" width="136" height="42" rx="10" fill="#0f172a" />
+            <text x="593" y="297" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">Permission</text>
+            <rect x="682" y="270" width="136" height="42" rx="10" fill="#0f172a" />
+            <text x="750" y="297" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">API Pattern</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section" id="dev">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Development model</p>
+          <h2>開發邏輯：畫面客製，模式重用。</h2>
+        </div>
+        <p>
+          Dodo Admin 不是賣「不用工程師」，而是賣「工程師可以更快落地」。
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="panel">
+          <h3>單表式 CRUD</h3>
+          <p style="margin-top: 10px;">這一類可以先做成共用模組，適合快速支撐資料維護、列表、查詢、建立、修改、刪除。</p>
+          <div style="margin-top: 14px;">
+            <span class="tag">DataTable</span>
+            <span class="tag">Create Form</span>
+            <span class="tag">Edit Dialog</span>
+            <span class="tag">Delete Action</span>
+            <span class="tag">Validation</span>
+            <span class="tag">Permission Guard</span>
+          </div>
+        </article>
+        <article class="panel">
+          <h3>Master-Detail</h3>
+          <p style="margin-top: 10px;">這部分先不要急著標準化。它牽涉主檔、明細、狀態、責任人、流程節點與互動方式，需要下一輪深入討論。</p>
+          <div style="margin-top: 14px;">
+            <span class="tag">主檔 / 明細</span>
+            <span class="tag">狀態流轉</span>
+            <span class="tag">責任追蹤</span>
+            <span class="tag">巢狀表格</span>
+            <span class="tag">情境化畫面</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="quote" style="margin-top: 22px;">
+        Dodo Admin 的畫面是客製的，但開發模式是產品化的。
+      </div>
+    </section>
+
+    <section class="section" id="next">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Next discussion</p>
+          <h2>下一輪應該深入 Master-Detail。</h2>
+        </div>
+        <p>
+          目前單表 CRUD 的方向已經比較清楚；真正會影響系統強度與 Demo 表現力的是 Master-Detail。
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card decision-card">
+          <span class="decision-label">問題 1</span>
+          <h3>主檔是什麼？</h3>
+          <p style="margin-top: 10px;">例如訂單、工單、案件、客戶、專案，哪一種最適合第一個 ERP Demo？</p>
+        </article>
+        <article class="card decision-card teal">
+          <span class="decision-label teal">問題 2</span>
+          <h3>明細怎麼呈現？</h3>
+          <p style="margin-top: 10px;">明細是表格、卡片、時間軸，還是混合式工作區？</p>
+        </article>
+        <article class="card decision-card amber">
+          <span class="decision-label amber">問題 3</span>
+          <h3>狀態怎麼流轉？</h3>
+          <p style="margin-top: 10px;">狀態、責任人、備註、歷史紀錄會決定系統是否真的能落地。</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="section">
+      <p>Document: Dodo Admin product boundary summary. Created for product scope consolidation before MVP planning.</p>
+    </div>
+  </footer>
+</body>
+</html>
