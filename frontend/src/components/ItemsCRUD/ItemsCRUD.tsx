@@ -11,8 +11,17 @@ import {
   Plus,
   Search,
   Trash2,
+  X,
 } from "lucide-react"
-import { type ReactNode, useMemo, useState } from "react"
+import {
+  type ReactNode,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -40,15 +49,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import {
   CATEGORIES,
@@ -152,8 +152,21 @@ function sortValue(r: ItemRow, key: keyof ItemRow): number | string {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
+// 面板預設/最小寬度（px）；最大寬度於拖拉時依容器寬度即時換算（容器的一半）
+const PANEL_DEFAULT_WIDTH = 448
+const PANEL_MIN_WIDTH = 360
+
 // ItemsCRUD 主元件：純前端密集表格（假資料，列表操作會動、表單僅示範）
 export function ItemsCRUD() {
+  // 元件根容器：自訂面板用 absolute 定位侷限在此範圍內，不外溢到側邊欄/Header
+  const hostRef = useRef<HTMLDivElement>(null)
+  const dragStateRef = useRef<{ startX: number; startWidth: number } | null>(
+    null,
+  )
+  const [panelWidth, setPanelWidth] = useState(PANEL_DEFAULT_WIDTH)
+  // 面板的「視覺開啟」狀態，跟資料分開，讓關閉時能先播放收合動畫再卸載內容
+  const [panelOpen, setPanelOpen] = useState(false)
+
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<ItemStatus | "all">("all")
   const [chip, setChip] = useState<ChipKey>("all")
@@ -164,7 +177,7 @@ export function ItemsCRUD() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(25)
-  // 新增/編輯：Slide Panel（Sheet）狀態；row 為 undefined 代表新增
+  // 新增/編輯：自訂 Slide Panel 狀態；row 為 undefined 代表新增
   const [panel, setPanel] = useState<{
     mode: "add" | "edit"
     row?: ItemRow
@@ -173,6 +186,50 @@ export function ItemsCRUD() {
   const [deleteTarget, setDeleteTarget] = useState<{ row?: ItemRow } | null>(
     null,
   )
+
+  // panel 開啟時：下一幀觸發滑入動畫；panel 關閉(null)時：立即收合（無需動畫，因內容已卸載）
+  useEffect(() => {
+    if (!panel) {
+      setPanelOpen(false)
+      return
+    }
+    const id = requestAnimationFrame(() => setPanelOpen(true))
+    return () => cancelAnimationFrame(id)
+  }, [panel])
+
+  // 關閉面板：先播放滑出動畫，動畫結束後才卸載內容（與 CSS transition-duration 一致）
+  const closePanel = useCallback(() => {
+    setPanelOpen(false)
+    window.setTimeout(() => setPanel(null), 200)
+  }, [])
+
+  // Esc 鍵關閉面板（拿掉遮罩後，這是唯一的鍵盤關閉手段）
+  useEffect(() => {
+    if (!panel) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closePanel()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [panel, closePanel])
+
+  // 拖拉把手：依水平位移即時調整面板寬度，上限鎖在容器寬度的一半
+  const handleResizeStart = (e: ReactPointerEvent<HTMLButtonElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    dragStateRef.current = { startX: e.clientX, startWidth: panelWidth }
+  }
+  const handleResizeMove = (e: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = dragStateRef.current
+    if (!drag) return
+    const containerWidth = hostRef.current?.clientWidth ?? Infinity
+    const maxWidth = Math.max(PANEL_MIN_WIDTH, containerWidth / 2)
+    const next = drag.startWidth + (drag.startX - e.clientX)
+    setPanelWidth(Math.min(maxWidth, Math.max(PANEL_MIN_WIDTH, next)))
+  }
+  const handleResizeEnd = (e: ReactPointerEvent<HTMLButtonElement>) => {
+    e.currentTarget.releasePointerCapture(e.pointerId)
+    dragStateRef.current = null
+  }
 
   // 改變任一篩選條件時回到第一頁
   const resetPage = () => setPage(0)
@@ -272,7 +329,7 @@ export function ItemsCRUD() {
     toast.info(`（示範）${msg}，未實際變更資料`)
 
   return (
-    <div className="flex flex-col gap-3 text-sm">
+    <div ref={hostRef} className="relative flex flex-col gap-3 text-sm">
       <div>
         <h1 className="text-xl font-bold tracking-tight">ItemsCRUD</h1>
         <p className="text-xs text-muted-foreground">
@@ -621,127 +678,160 @@ export function ItemsCRUD() {
       </Dialog>
 
       {/* 新增 / 編輯：右側 Slide Panel（示範用，不寫入資料、不驗證） */}
-      <Sheet open={panel !== null} onOpenChange={(o) => !o && setPanel(null)}>
-        <SheetContent
-          side="right"
-          className="w-full gap-0 overflow-y-auto sm:max-w-md"
+      {/* 新增/編輯自訂 Slide Panel：absolute 侷限在本元件根容器內，無遮罩、可拖拉寬度 */}
+      {panel !== null && (
+        <div
+          className="absolute inset-y-0 right-0 z-20 flex border-l bg-background shadow-xl transition-transform duration-200 ease-out"
+          style={{
+            width: panelWidth,
+            transform: panelOpen ? "translateX(0)" : "translateX(100%)",
+          }}
         >
-          <SheetHeader>
-            <SheetTitle>
-              {panel?.mode === "edit" ? "編輯項目" : "新增項目"}
-            </SheetTitle>
-            <SheetDescription>
-              此為示範表單，儲存不會寫入資料。
-            </SheetDescription>
-          </SheetHeader>
+          {/* 拖拉把手：左邊緣，最大寬度鎖在容器一半（見 handleResizeMove） */}
+          <button
+            type="button"
+            aria-label="拖曳調整面板寬度"
+            onPointerDown={handleResizeStart}
+            onPointerMove={handleResizeMove}
+            onPointerUp={handleResizeEnd}
+            className="-ml-1 w-2 shrink-0 cursor-col-resize touch-none border-0 bg-transparent p-0 hover:bg-primary/20 active:bg-primary/30"
+          />
 
-          <div className="flex flex-col gap-5 px-4 pb-4">
-            <FormSection title="基本資料">
-              <Field label="編號" defaultValue={panel?.row?.code} disabled />
-              <Field label="名稱" defaultValue={panel?.row?.name} />
-              <SelectField
-                label="分類"
-                defaultValue={panel?.row?.category}
-                options={CATEGORIES.map((v) => ({ value: v, label: v }))}
-              />
-              <SelectField
-                label="負責人"
-                defaultValue={panel?.row?.handler}
-                options={HANDLERS.map((v) => ({ value: v, label: v }))}
-              />
-              <SelectField
-                label="優先度"
-                defaultValue={panel?.row?.priority ?? "normal"}
-                options={PRIORITY_OPTIONS}
-              />
-              <SelectField
-                label="狀態"
-                defaultValue={panel?.row?.status ?? "draft"}
-                options={STATUS_ORDER.map((s) => ({
-                  value: s,
-                  label: STATUS_CONFIG[s].label,
-                }))}
-              />
-            </FormSection>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex items-start justify-between gap-4 border-b px-4 py-4">
+              <div>
+                <h2 className="text-base font-semibold">
+                  {panel.mode === "edit" ? "編輯項目" : "新增項目"}
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  此為示範表單，儲存不會寫入資料。
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="-mt-1 size-7 shrink-0"
+                onClick={closePanel}
+              >
+                <X className="size-4" />
+                <span className="sr-only">關閉</span>
+              </Button>
+            </div>
 
-            <FormSection title="日期與聯絡">
-              <DateField
-                label="建立日期"
-                defaultValue={panel?.row?.createdDate.replace(/\//g, "-")}
-              />
-              <DateField
-                label="預計到貨"
-                defaultValue={panel?.row?.dueDate.replace(/\//g, "-")}
-              />
-              <DateField
-                label="預計出貨日"
-                defaultValue={panel?.row?.expectedShipDate}
-              />
-              <Field label="聯絡電話" defaultValue={panel?.row?.contactPhone} />
-            </FormSection>
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="flex flex-col gap-5">
+                <FormSection title="基本資料">
+                  <Field label="編號" defaultValue={panel.row?.code} disabled />
+                  <Field label="名稱" defaultValue={panel.row?.name} />
+                  <SelectField
+                    label="分類"
+                    defaultValue={panel.row?.category}
+                    options={CATEGORIES.map((v) => ({ value: v, label: v }))}
+                  />
+                  <SelectField
+                    label="負責人"
+                    defaultValue={panel.row?.handler}
+                    options={HANDLERS.map((v) => ({ value: v, label: v }))}
+                  />
+                  <SelectField
+                    label="優先度"
+                    defaultValue={panel.row?.priority ?? "normal"}
+                    options={PRIORITY_OPTIONS}
+                  />
+                  <SelectField
+                    label="狀態"
+                    defaultValue={panel.row?.status ?? "draft"}
+                    options={STATUS_ORDER.map((s) => ({
+                      value: s,
+                      label: STATUS_CONFIG[s].label,
+                    }))}
+                  />
+                </FormSection>
 
-            <FormSection title="金額與條件">
-              <Field
-                label="數量"
-                type="number"
-                defaultValue={panel?.row ? String(panel.row.qty) : ""}
-              />
-              <SelectField
-                label="幣別"
-                defaultValue={panel?.row?.currency ?? "TWD"}
-                options={CURRENCY_OPTIONS}
-              />
-              <Field
-                label="金額"
-                type="number"
-                defaultValue={panel?.row ? String(panel.row.amount) : ""}
-              />
-              <SelectField
-                label="付款條件"
-                defaultValue={panel?.row?.terms}
-                options={TERMS.map((v) => ({ value: v, label: v }))}
-              />
-              <Field
-                label="稅率 (%)"
-                type="number"
-                defaultValue={panel?.row ? String(panel.row.taxRate) : ""}
-              />
-              <Field
-                label="折扣 (%)"
-                type="number"
-                defaultValue={panel?.row ? String(panel.row.discount) : ""}
-              />
-            </FormSection>
+                <FormSection title="日期與聯絡">
+                  <DateField
+                    label="建立日期"
+                    defaultValue={panel.row?.createdDate.replace(/\//g, "-")}
+                  />
+                  <DateField
+                    label="預計到貨"
+                    defaultValue={panel.row?.dueDate.replace(/\//g, "-")}
+                  />
+                  <DateField
+                    label="預計出貨日"
+                    defaultValue={panel.row?.expectedShipDate}
+                  />
+                  <Field
+                    label="聯絡電話"
+                    defaultValue={panel.row?.contactPhone}
+                  />
+                </FormSection>
 
-            <FormSection title="其他">
-              <TextareaField
-                label="交貨地址"
-                defaultValue={panel?.row?.deliveryAddress}
-                span
-              />
-              <TextareaField
-                label="備註"
-                defaultValue={panel?.row?.remark}
-                span
-              />
-            </FormSection>
+                <FormSection title="金額與條件">
+                  <Field
+                    label="數量"
+                    type="number"
+                    defaultValue={panel.row ? String(panel.row.qty) : ""}
+                  />
+                  <SelectField
+                    label="幣別"
+                    defaultValue={panel.row?.currency ?? "TWD"}
+                    options={CURRENCY_OPTIONS}
+                  />
+                  <Field
+                    label="金額"
+                    type="number"
+                    defaultValue={panel.row ? String(panel.row.amount) : ""}
+                  />
+                  <SelectField
+                    label="付款條件"
+                    defaultValue={panel.row?.terms}
+                    options={TERMS.map((v) => ({ value: v, label: v }))}
+                  />
+                  <Field
+                    label="稅率 (%)"
+                    type="number"
+                    defaultValue={panel.row ? String(panel.row.taxRate) : ""}
+                  />
+                  <Field
+                    label="折扣 (%)"
+                    type="number"
+                    defaultValue={panel.row ? String(panel.row.discount) : ""}
+                  />
+                </FormSection>
+
+                <FormSection title="其他">
+                  <TextareaField
+                    label="交貨地址"
+                    defaultValue={panel.row?.deliveryAddress}
+                    span
+                  />
+                  <TextareaField
+                    label="備註"
+                    defaultValue={panel.row?.remark}
+                    span
+                  />
+                </FormSection>
+              </div>
+            </div>
+
+            {/* 功能區塊：底色 + 上邊框明確區隔，之後新增取消以外的操作放這排 */}
+            <div className="flex items-center justify-end gap-2 border-t bg-muted/40 px-4 py-3">
+              <Button variant="outline" onClick={closePanel}>
+                取消
+              </Button>
+              <Button
+                onClick={() => {
+                  demoToast("儲存")
+                  closePanel()
+                }}
+              >
+                儲存
+              </Button>
+            </div>
           </div>
-
-          <SheetFooter className="flex-row justify-end border-t pt-4">
-            <SheetClose asChild>
-              <Button variant="outline">取消</Button>
-            </SheetClose>
-            <Button
-              onClick={() => {
-                demoToast("儲存")
-                setPanel(null)
-              }}
-            >
-              儲存
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+        </div>
+      )}
     </div>
   )
 }
