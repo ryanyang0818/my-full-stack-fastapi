@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_layout/")({
   head: () => ({
     meta: [
       {
-        title: "Dashboard - DoDo ERP",
+        title: "Dashboard - DoDo Admin",
       },
     ],
   }),

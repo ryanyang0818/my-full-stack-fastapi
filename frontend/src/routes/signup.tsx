@@ -51,7 +51,7 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       {
-        title: "Sign Up - DoDo ERP",
+        title: "Sign Up - DoDo Admin",
       },
     ],
   }),

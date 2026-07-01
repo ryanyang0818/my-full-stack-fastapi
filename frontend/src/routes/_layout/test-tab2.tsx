@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_layout/test-tab2")({
   head: () => ({
     meta: [
       {
-        title: "TestTab2 - DoDo ERP",
+        title: "TestTab2 - DoDo Admin",
       },
     ],
   }),

@@ -36,7 +36,7 @@ const DEMO_TABS: TabConfig[] = [
 export const Route = createFileRoute("/_layout/test-tab")({
   component: TestTab,
   head: () => ({
-    meta: [{ title: "TestTab - DoDo ERP" }],
+    meta: [{ title: "TestTab - DoDo Admin" }],
   }),
 })
 

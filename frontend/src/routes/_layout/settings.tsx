@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_layout/settings")({
   head: () => ({
     meta: [
       {
-        title: "Settings - DoDo ERP",
+        title: "Settings - DoDo Admin",
       },
     ],
   }),

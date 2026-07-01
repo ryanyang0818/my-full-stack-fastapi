@@ -13,7 +13,7 @@ interface LogoProps {
   asLink?: boolean
 }
 
-// 顯示 DoDo ERP 品牌標誌，並依目前主題切換深淺色版本
+// 顯示 DoDo Admin 品牌標誌，並依目前主題切換深淺色版本
 export function Logo({
   variant = "full",
   className,
@@ -30,7 +30,7 @@ export function Logo({
       <>
         <img
           src={fullLogo}
-          alt="DoDo ERP"
+          alt="DoDo Admin"
           className={cn(
             "h-6 w-auto group-data-[collapsible=icon]:hidden",
             className,
@@ -38,7 +38,7 @@ export function Logo({
         />
         <img
           src={iconLogo}
-          alt="DoDo ERP"
+          alt="DoDo Admin"
           className={cn(
             "size-5 hidden group-data-[collapsible=icon]:block",
             className,
@@ -48,7 +48,7 @@ export function Logo({
     ) : (
       <img
         src={variant === "full" ? fullLogo : iconLogo}
-        alt="DoDo ERP"
+        alt="DoDo Admin"
         className={cn(variant === "full" ? "h-6 w-auto" : "size-5", className)}
       />
     )

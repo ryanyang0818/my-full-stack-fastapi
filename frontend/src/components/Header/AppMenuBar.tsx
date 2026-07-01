@@ -110,14 +110,14 @@ const menuGroups: AppMenuGroup[] = [
       { type: "item", label: "使用說明", shortcut: "F1" },
       { type: "item", label: "快捷鍵清單" },
       { type: "separator" },
-      { type: "item", label: "關於 DoDo ERP" },
+      { type: "item", label: "關於 DoDo Admin" },
     ],
   },
 ]
 
 // 輸出展示用選單點擊事件，日後可替換成真實命令
 function handleMenuAction(menuLabel: string, itemLabel: string) {
-  console.info(`[DoDo ERP] ${menuLabel} > ${itemLabel}`)
+  console.info(`[DoDo Admin] ${menuLabel} > ${itemLabel}`)
 }
 
 type MenuEntryProps = {

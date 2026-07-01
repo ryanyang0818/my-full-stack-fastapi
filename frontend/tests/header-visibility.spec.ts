@@ -152,7 +152,7 @@ test("AppMenuBar 暫時顯示後點擊外部才關閉", async ({ page }) => {
 
 // 驗證 hideUserHeader 能隱藏使用者標頭並更新狀態
 test("hideUserHeader() 隱藏 UserHeader", async ({ page }) => {
-  const userHeader = page.getByText("DoDo ERP", { exact: true })
+  const userHeader = page.getByText("DoDo Admin", { exact: true })
 
   await expect(userHeader).toBeVisible()
 
@@ -168,7 +168,7 @@ test("hideUserHeader() 隱藏 UserHeader", async ({ page }) => {
 
 // 驗證 showUserHeader 能顯示使用者標頭並更新狀態
 test("showUserHeader() 顯示 UserHeader", async ({ page }) => {
-  const userHeader = page.getByText("DoDo ERP", { exact: true })
+  const userHeader = page.getByText("DoDo Admin", { exact: true })
 
   await page.evaluate(() => window.headerControls?.hideUserHeader())
   await expect(userHeader).toBeHidden()
@@ -185,7 +185,7 @@ test("showUserHeader() 顯示 UserHeader", async ({ page }) => {
 
 // 驗證 toggleUserHeader 能切換使用者標頭顯示狀態
 test("toggleUserHeader() 切換 UserHeader 顯示狀態", async ({ page }) => {
-  const userHeader = page.getByText("DoDo ERP", { exact: true })
+  const userHeader = page.getByText("DoDo Admin", { exact: true })
 
   await expect(userHeader).toBeVisible()
 
@@ -211,7 +211,7 @@ test("hideAll() 隱藏兩個 Header", async ({ page }) => {
   const appMenu = page.getByRole("navigation", {
     name: "應用程式功能選單",
   })
-  const userHeader = page.getByText("DoDo ERP", { exact: true })
+  const userHeader = page.getByText("DoDo Admin", { exact: true })
 
   await page.evaluate(() => window.headerControls?.showAppMenu())
   await expect(appMenu).toBeVisible()
@@ -231,7 +231,7 @@ test("showAll() 顯示兩個 Header", async ({ page }) => {
   const appMenu = page.getByRole("navigation", {
     name: "應用程式功能選單",
   })
-  const userHeader = page.getByText("DoDo ERP", { exact: true })
+  const userHeader = page.getByText("DoDo Admin", { exact: true })
 
   await page.evaluate(() => window.headerControls?.hideAll())
   await expect(appMenu).toBeHidden()

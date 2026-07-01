@@ -30,7 +30,7 @@ test("window.dodo.controller exposes header controllers", async ({ page }) => {
   const appMenu = page.getByRole("navigation", {
     name: "應用程式功能選單",
   })
-  const userHeader = page.getByText("DoDo ERP", { exact: true })
+  const userHeader = page.getByText("DoDo Admin", { exact: true })
 
   await page.evaluate(() => window.dodo?.controller.appHeader.show())
   await expect(appMenu).toBeVisible()

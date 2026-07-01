@@ -9,7 +9,7 @@ import { useHeaderVisibility } from "./header-visibility"
 
 const departmentTabs = ["採購", "銷售", "庫存", "財務", "人資", "製造", "報表"]
 
-// 顯示 DoDo ERP 的品牌列、部門分頁、搜尋與目前登入使用者
+// 顯示 DoDo Admin 的品牌列、部門分頁、搜尋與目前登入使用者
 export function UserHeader() {
   const { user } = useAuth()
   const { userHeaderVisible } = useHeaderVisibility()
@@ -25,9 +25,9 @@ export function UserHeader() {
     >
       <SidebarTrigger className="size-8 shrink-0 text-slate-600 hover:bg-slate-100 hover:text-slate-950" />
       <div className="flex h-full shrink-0 items-center gap-2.5 border-r border-slate-200 pr-5">
-        <img src={dodoIcon} alt="DoDo ERP" className="size-[30px] rounded" />
+        <img src={dodoIcon} alt="DoDo Admin" className="size-[30px] rounded" />
         <div className="min-w-0 leading-tight">
-          <div className="font-semibold text-slate-950">DoDo ERP</div>
+          <div className="font-semibold text-slate-950">DoDo Admin</div>
           <div className="font-mono text-[10px] text-slate-500">
             PROD · v4.2.1
           </div>
