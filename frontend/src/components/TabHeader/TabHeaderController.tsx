@@ -48,7 +48,7 @@ export function TabHeaderController() {
         />
       </div>
       {/* Tab Content Area：撐滿剩餘高度，讓內部頁面（如 ItemsCRUD 的 Side Panel）能貼滿 */}
-      <div className="w-full min-w-0 max-w-screen-2xl flex-1 min-h-0 pt-4">
+      <div className="w-full min-w-0 max-w-full flex-1 min-h-0 pt-4">
         <TabPageHost />
       </div>
     </div>

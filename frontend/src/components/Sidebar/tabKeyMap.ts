@@ -5,6 +5,7 @@ export const PATH_TO_TAB_KEY: Record<string, TabKey> = {
   "/": "dashboard",
   "/items": "items",
   "/items-crud": "items-crud",
+  "/master-detail": "master-detail",
   "/admin": "admin",
   "/system/menus": "menus",
 }

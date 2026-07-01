@@ -153,7 +153,7 @@ function sortValue(r: ItemRow, key: keyof ItemRow): number | string {
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
 // 面板預設/最小寬度（px）；最大寬度於拖拉時依容器寬度即時換算（容器的一半）
-const PANEL_DEFAULT_WIDTH = 448
+const PANEL_DEFAULT_WIDTH = 800
 const PANEL_MIN_WIDTH = 360
 
 // ItemsCRUD 主元件：純前端密集表格（假資料，列表操作會動、表單僅示範）
@@ -201,6 +201,11 @@ export function ItemsCRUD() {
   const closePanel = useCallback(() => {
     setPanelOpen(false)
     window.setTimeout(() => setPanel(null), 200)
+  }, [])
+
+  // 收合面板：將目前寬度縮回最小寬度設定
+  const collapsePanel = useCallback(() => {
+    setPanelWidth(PANEL_MIN_WIDTH)
   }, [])
 
   // Esc 鍵關閉面板（拿掉遮罩後，這是唯一的鍵盤關閉手段）
@@ -710,7 +715,28 @@ export function ItemsCRUD() {
           />
 
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex items-start justify-between gap-4 border-b px-4 py-4">
+            <div className="flex h-9 shrink-0 items-center justify-between border-b bg-muted/40 px-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0"
+                onClick={collapsePanel}
+              >
+                <ChevronsRight className="size-4" />
+                <span className="sr-only">收合面板至最小寬度</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0"
+                onClick={closePanel}
+              >
+                <X className="size-4" />
+                <span className="sr-only">關閉</span>
+              </Button>
+            </div>
+
+            <div className="border-b px-4 py-4">
               <div>
                 <h2 className="text-base font-semibold">
                   {panel.mode === "edit" ? "編輯項目" : "新增項目"}
@@ -719,15 +745,6 @@ export function ItemsCRUD() {
                   此為示範表單，儲存不會寫入資料。
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="-mt-1 size-7 shrink-0"
-                onClick={closePanel}
-              >
-                <X className="size-4" />
-                <span className="sr-only">關閉</span>
-              </Button>
             </div>
 
             <div className="flex-1 overflow-y-auto px-4 py-4">

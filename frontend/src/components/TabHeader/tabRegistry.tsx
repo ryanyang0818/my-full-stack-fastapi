@@ -3,6 +3,7 @@ import {
   Home,
   ListTree,
   type LucideIcon,
+  Rows2,
   Table2,
   Users,
 } from "lucide-react"
@@ -12,6 +13,7 @@ import { AdminView } from "@/components/Admin/AdminView"
 import { DashboardView } from "@/components/Dashboard/DashboardView"
 import { ItemsView } from "@/components/Items/ItemsView"
 import { ItemsCRUD } from "@/components/ItemsCRUD/ItemsCRUD"
+import { MasterDetailDemo } from "@/components/MasterDetailDemo/MasterDetailDemo"
 import { MenusView } from "@/components/Menus/MenusView"
 import type { TabKey } from "@/components/TabHeader/types"
 
@@ -38,6 +40,11 @@ export const tabRegistry: Record<TabKey, TabDefinition> = {
     title: "ItemsCRUD",
     icon: Table2,
     component: ItemsCRUD,
+  },
+  "master-detail": {
+    title: "Master Detail",
+    icon: Rows2,
+    component: MasterDetailDemo,
   },
   admin: {
     title: "Admin",

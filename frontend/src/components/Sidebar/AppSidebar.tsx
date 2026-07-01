@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { Briefcase, Home, Table2, Users } from "lucide-react"
+import { Briefcase, Home, Rows2, Table2, Users } from "lucide-react"
 import { useState } from "react"
 
 import { MenusService, type MenuTreeNodePublic } from "@/client"
@@ -20,6 +20,7 @@ const baseItems: Item[] = [
   { icon: Home, title: "Dashboard", path: "/" },
   { icon: Briefcase, title: "Items", path: "/items" },
   { icon: Table2, title: "ItemsCRUD", path: "/items-crud" },
+  { icon: Rows2, title: "Master Detail", path: "/master-detail" },
 ]
 
 // 組合登入後頁面的固定入口、後端選單、外觀設定與使用者資訊
