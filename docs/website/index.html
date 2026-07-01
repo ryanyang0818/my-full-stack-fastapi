@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dodo Admin — 產品定位介紹</title>
+<meta name="description" content="Dodo Admin 是企業後台管理系統的基礎骨架,聚焦登入、權限、選單、版面、資料管理與資料表。一頁看懂產品意圖、功能範圍、使用流程、權限設計與常見問題。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #0E2A47;
+    --action: #0A74DA;
+    --action-hover: #085EC0;
+    --bg: #F8F9FA;
+    --bg-mid: #E9ECEF;
+    --surface: #FFFFFF;
+    --border: #D1D5DB;
+    --gold: #C7A054;
+    --gold-ink: #6b4f1c;
+    --green: #166534;
+    --green-bg: #EAF3EC;
+    --gold-bg: #FBF3E4;
+    --text-body: #374151;
+    --text-heading: #111827;
+    --text-muted: #6B7280;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 32px;
+    --font-display: "Noto Serif TC", Georgia, serif;
+    --font-body: "Noto Sans TC", system-ui, -apple-system, "PingFang TC", sans-serif;
+    --measure: 72ch;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--text-body);
+    background: var(--bg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: var(--font-display); color: var(--text-heading); margin: 0; }
+  a { color: var(--action); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  .shell { display: flex; min-height: 100vh; align-items: stretch; }
+
+  /* ---------- Side navigation ---------- */
+  .sidenav {
+    width: 248px;
+    flex-shrink: 0;
+    background: var(--navy);
+    color: #E7EEF5;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: var(--space-lg) 20px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    overflow-y: auto;
+  }
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .brand-mark { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; color: #FFFFFF; }
+  .brand-sub { font-size: 0.8125rem; color: #9FB3C8; letter-spacing: 0.02em; }
+
+  .nav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .nav-list a {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    color: #C9D6E3;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+  }
+  .nav-list a .n { font-family: var(--font-display); font-size: 0.8125rem; color: #7C93AB; }
+  .nav-list a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-list a[aria-current="true"] {
+    background: var(--action);
+    color: #fff;
+  }
+  .nav-list a[aria-current="true"] .n { color: #DCEBFB; }
+
+  .sidenav-foot { margin-top: auto; font-size: 0.8125rem; color: #8AA0B7; }
+  .sidenav-foot .badge { margin-top: var(--space-sm); }
+
+  .nav-toggle { display: none; }
+
+  /* ---------- Main content ---------- */
+  main { flex: 1; min-width: 0; }
+  .container { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+  section, header.hero { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    color: var(--action);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  h1 { font-size: clamp(1.9rem, 4vw, 2.75rem); line-height: 1.25; }
+  h2 { font-size: 1.5rem; line-height: 1.35; margin-bottom: 8px; }
+  h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+
+  .lead { font-size: 1.125rem; color: var(--text-body); max-width: var(--measure); margin: 16px 0 0; }
+
+  /* ---------- Hero ---------- */
+  header.hero { background: var(--surface); }
+  .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--space-lg); align-items: start; margin-top: var(--space-lg); }
+  @media (max-width: 760px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  .intent-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .intent-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.98rem; }
+  .intent-list .mark {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--green-bg); color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; margin-top: 2px;
+  }
+
+  .boundary-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-md) var(--space-lg);
+  }
+  .boundary-box .badge-not { margin-bottom: 12px; }
+  .boundary-box p { margin: 10px 0 0; font-size: 0.95rem; }
+
+  /* ---------- Badges ---------- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8125rem; font-weight: 500;
+    padding: 4px 10px; border-radius: var(--radius-sm);
+  }
+  .badge-verify { background: var(--green-bg); color: var(--green); }
+  .badge-caution { background: var(--gold-bg); color: var(--gold-ink); }
+  .badge-not { background: #FCEBEB; color: #A32D2D; }
+  .badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* ---------- Feature list (功能規格,收斂呈現) ---------- */
+  .feature-list { list-style: none; margin: var(--space-md) 0 0; padding: 0; border-top: 1px solid var(--border); }
+  .feature-list li {
+    display: grid; grid-template-columns: 40px 1fr; gap: var(--space-md);
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .feature-list .idx {
+    font-family: var(--font-display); font-weight: 600; color: var(--navy);
+    font-size: 1rem;
+  }
+  .feature-list h3 { display: inline; font-size: 1rem; }
+  .feature-list p { margin: 4px 0 0; font-size: 0.9375rem; color: var(--text-body); }
+
+  .scope-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-top: var(--space-lg); }
+  @media (max-width: 640px) { .scope-row { grid-template-columns: 1fr; } }
+  .scope-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: var(--space-md);
+  }
+  .scope-card h3 { font-size: 0.95rem; margin-bottom: 10px; color: var(--text-muted); font-weight: 600; }
+  .scope-card ul { margin: 0; padding-left: 1.1em; font-size: 0.9375rem; }
+  .scope-card li { margin-bottom: 4px; }
+
+  /* ---------- Tables ---------- */
+  .table-wrap { overflow-x: auto; margin-top: var(--space-md); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  caption { text-align: left; font-weight: 600; padding: 12px 16px 0; color: var(--text-heading); }
+  th, td { text-align: left; padding: 12px 16px; vertical-align: top; }
+  thead th { background: var(--bg-mid); color: var(--text-heading); font-weight: 600; font-size: 0.875rem; }
+  tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--bg); }
+
+  /* ---------- Flow steps (使用流程) ---------- */
+  .step-list { list-style: none; margin: var(--space-md) 0 0; padding: 0; counter-reset: step; }
+  .step-list li {
+    counter-increment: step;
+    display: grid; grid-template-columns: 32px 1fr; gap: var(--space-md);
+    padding: 16px 0; border-bottom: 1px solid var(--border);
+  }
+  .step-list li::before {
+    content: counter(step);
+    font-family: var(--font-display); font-weight: 600;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.875rem;
+  }
+  .step-list .action { font-weight: 600; color: var(--text-heading); }
+  .step-list .response { color: var(--text-body); font-size: 0.9375rem; margin-top: 2px; }
+
+  /* ---------- Permission principle chips ---------- */
+  .principle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: var(--space-md); }
+  .principle-chip {
+    border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-md);
+    padding: 12px 14px;
+  }
+  .principle-chip .badge { margin-bottom: 6px; }
+  .principle-chip p { margin: 0; font-size: 0.875rem; color: var(--text-body); }
+
+  h3.sub { margin-top: var(--space-lg); font-size: 1.05rem; }
+  section p.body-p { max-width: var(--measure); }
+
+  /* ---------- Section figures (輔助情境圖) ---------- */
+  .section-figure {
+    margin: var(--space-lg) 0 0;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--surface); overflow: hidden;
+  }
+  .section-figure img { display: block; width: 100%; height: auto; }
+  .section-figure figcaption {
+    padding: 10px 16px; font-size: 0.8125rem; color: var(--text-muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-item {
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--surface); margin-top: 10px; overflow: hidden;
+  }
+  .faq-item summary {
+    cursor: pointer; list-style: none; padding: 16px 18px;
+    font-weight: 600; color: var(--text-heading);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary .chevron { transition: transform 0.2s ease-out; flex-shrink: 0; color: var(--text-muted); }
+  .faq-item[open] summary .chevron { transform: rotate(180deg); }
+  .faq-item .faq-a { padding: 0 18px 18px; font-size: 0.9375rem; color: var(--text-body); }
+  .faq-item .faq-a p { margin: 0 0 8px; }
+  .faq-item .faq-a p:last-child { margin-bottom: 0; }
+
+  /* ---------- Footer ---------- */
+  footer.site-foot {
+    padding: 40px 0 64px;
+    font-size: 0.875rem; color: var(--text-muted);
+  }
+  footer.site-foot a { color: var(--text-muted); text-decoration: underline; }
+
+  /* ---------- Responsive: collapse sidenav ---------- */
+  @media (max-width: 900px) {
+    .shell { flex-direction: column; }
+    .sidenav {
+      width: 100%; height: auto; position: sticky; top: 0; z-index: 10;
+      flex-direction: row; align-items: center; gap: var(--space-md);
+      padding: 12px 16px;
+    }
+    .brand { flex-direction: row; align-items: baseline; gap: 8px; }
+    .nav-list { flex-direction: row; overflow-x: auto; gap: 4px; flex: 1; }
+    .nav-list a { white-space: nowrap; padding: 8px 10px; }
+    .sidenav-foot { display: none; }
+    section, header.hero { padding: 40px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidenav" aria-label="頁面導覽">
+    <div class="brand">
+      <span class="brand-mark">Dodo Admin</span>
+      <span class="brand-sub">產品定位介紹</span>
+    </div>
+    <ol class="nav-list" id="nav-list">
+      <li><a href="#intent" data-nav><span class="n">01</span> 產品意圖</a></li>
+      <li><a href="#features" data-nav><span class="n">02</span> 功能規格</a></li>
+      <li><a href="#flows" data-nav><span class="n">03</span> 使用流程</a></li>
+      <li><a href="#permissions" data-nav><span class="n">04</span> 權限說明</a></li>
+      <li><a href="#faq" data-nav><span class="n">05</span> 常見問題</a></li>
+    </ol>
+    <div class="sidenav-foot">
+      <p>企業後台管理系統的基礎骨架</p>
+      <span class="badge badge-verify">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2l6 2.5v4.4c0 4.2-2.6 7.6-6 8.8-3.4-1.2-6-4.6-6-8.8V4.5L10 2z" opacity="0.25"/><path d="M8.3 10.8l-1.6-1.6-1.1 1.1 2.7 2.7 5-5-1.1-1.1z"/></svg>
+        非完整 ERP
+      </span>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero" id="intent">
+      <div class="container">
+        <span class="eyebrow">01 · 產品意圖</span>
+        <h1>Dodo Admin 是企業後台管理系統的基礎骨架。</h1>
+        <p class="lead">Dodo Admin 是一套給企業內部管理系統使用的 full-stack admin foundation。它的目的是先建立一個穩定、清楚、可擴充的後台系統骨架,讓後續功能可以用一致的方式被加入。</p>
+
+        <figure class="section-figure">
+          <img src="assets/01-Product-Intent-image.png" alt="桌面上攤開產品架構藍圖,標示登入、權限、選單、資料表等模組卡片" width="1200" height="900" />
+          <figcaption>從產品意圖出發,先把系統架構的骨架畫清楚,再談功能與擴充。</figcaption>
+        </figure>
+
+        <div class="hero-grid">
+          <div>
+            <h2 style="font-size:1.05rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">核心意圖</h2>
+            <ul class="intent-list">
+              <li><span class="mark">✓</span>提供登入、權限、選單、版面、CRUD、資料表等後台基礎能力</li>
+              <li><span class="mark">✓</span>讓工程師可以快速建立新的管理模組</li>
+              <li><span class="mark">✓</span>讓管理者可以清楚控制使用者能看到與操作的功能</li>
+              <li><span class="mark">✓</span>讓 AI agent 能透過文件、規則與一致架構穩定協作</li>
+            </ul>
+          </div>
+          <div class="boundary-box">
+            <span class="badge badge-not">
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm3.5 10.1l-1.4 1.4L10 11.4l-2.1 2.1-1.4-1.4L8.6 10 6.5 7.9l1.4-1.4L10 8.6l2.1-2.1 1.4 1.4L11.4 10l2.1 2.1z"/></svg>
+              邊界
+            </span>
+            <p>Dodo Admin <strong>不是</strong>完整 ERP。</p>
+            <p>它目前不追求複雜的會計、庫存稽核、製造流程或大型企業流程編排,而是優先把 admin 系統的共同基礎打穩。</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="features" aria-labelledby="features-h">
+      <div class="container">
+        <span class="eyebrow">02 · 功能規格</span>
+        <h2 id="features-h">六項基礎能力</h2>
+        <p class="body-p">這些能力是未來所有管理模組都會共用的底層骨架。</p>
+
+        <figure class="section-figure">
+          <img src="assets/box_and_tools.png" alt="打開的工具箱,裝著使用者權限、CRUD 模組、登入與權限紀錄卡片" width="1200" height="675" />
+          <figcaption>六項基礎能力,像一個隨時可以取用的共用工具箱。</figcaption>
+        </figure>
+
+        <ul class="feature-list">
+          <li><span class="idx">01</span><div><h3>使用者登入</h3><p>只有授權使用者可以進入後台,保護企業內部資料不被未授權存取。</p></div></li>
+          <li><span class="idx">02</span><div><h3>角色與權限</h3><p>依使用者角色決定能看到哪些功能;管理者看見系統設定,一般使用者只看見自己工作相關的功能。</p></div></li>
+          <li><span class="idx">03</span><div><h3>功能選單</h3><p>統一的功能選單,依權限顯示,使用者只會看到自己可以使用的功能。</p></div></li>
+          <li><span class="idx">04</span><div><h3>後台版面</h3><p>一致的操作版面(頂部資訊列、左側選單、主要工作區、底部狀態列),降低每個新功能的學習成本。</p></div></li>
+          <li><span class="idx">05</span><div><h3>資料新增、查看、修改、刪除</h3><p>基本資料管理能力,透過資料模型與固定操作流程管理,採參數化查詢,避免資料存取邏輯散落各處。</p></div></li>
+          <li><span class="idx">06</span><div><h3>資料表操作</h3><p>提供查找、瀏覽、篩選、排序與操作資料的主要入口;資料來源與存取權限仍由後端 API 控制。</p></div></li>
+        </ul>
+
+        <div class="scope-row">
+          <div class="scope-card">
+            <h3>功能層級</h3>
+            <ul>
+              <li>基礎平台功能:登入、權限、選單、版面、資料管理、資料表</li>
+              <li>業務模組功能:商品、客戶、訂單、庫存、報表等可擴充模組</li>
+            </ul>
+          </div>
+          <div class="scope-card">
+            <h3>資料安全原則</h3>
+            <ul>
+              <li>前端只負責操作體驗,實際資料讀寫由後端控管</li>
+              <li>採用資料模型管理欄位、格式與驗證規則</li>
+              <li>需要 SQL 時採參數化查詢,不直接拼接使用者輸入</li>
+              <li>選單顯示是使用體驗,資料操作仍需後端權限檢查</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flows" aria-labelledby="flows-h">
+      <div class="container">
+        <span class="eyebrow">03 · 使用流程</span>
+        <h2 id="flows-h">後台系統的共用操作流程</h2>
+        <p class="body-p">這些流程是所有後台管理功能都會共用的操作方式,適用於任何產業與業務模組。</p>
+
+        <ol class="step-list">
+          <li><div><div class="action">登入 —— 使用者輸入帳號密碼</div><div class="response">系統驗證身份,登入後進入後台</div></div></li>
+          <li><div><div class="action">找功能 —— 使用者從左側選單選擇功能</div><div class="response">系統開啟對應頁面或工作頁籤</div></div></li>
+          <li><div><div class="action">看資料 —— 使用者進入資料列表</div><div class="response">系統以資料表呈現可查看的資料</div></div></li>
+          <li><div><div class="action">操作資料 —— 使用者新增、編輯或刪除資料</div><div class="response">系統依權限與資料規則處理操作</div></div></li>
+          <li><div><div class="action">切換工作 —— 使用者在不同頁籤間切換</div><div class="response">系統保留工作區狀態,方便多工</div></div></li>
+          <li><div><div class="action">快捷鍵操作 —— 使用者透過鍵盤快速執行常用動作</div><div class="response">系統提供更有效率的操作方式(鍵位尚未定案,先定義為共用能力)</div></div></li>
+          <li><div><div class="action">權限限制 —— 使用者沒有某功能權限</div><div class="response">系統不顯示功能入口,後端仍需控管存取</div></div></li>
+          <li><div><div class="action">離開系統 —— 使用者登出</div><div class="response">系統清除登入狀態,回到登入頁</div></div></li>
+        </ol>
+
+        <h3 class="sub">目前不包含的流程</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:30%">不列入項目</th><th>原因</th></tr></thead>
+            <tbody>
+              <tr><td>採購流程</td><td>目前尚未定義實際商業模組</td></tr>
+              <tr><td>訂單流程</td><td>避免讓人誤以為產品已包含訂單系統</td></tr>
+              <tr><td>庫存流程</td><td>避免將核心範圍擴大成完整 ERP</td></tr>
+              <tr><td>完整審批流</td><td>目前先聚焦後台共用操作方式</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="permissions" aria-labelledby="perm-h">
+      <div class="container">
+        <span class="eyebrow">04 · 權限說明</span>
+        <h2 id="perm-h">身份確認,不等於功能權限</h2>
+        <p class="body-p">登入負責確認身份,權限負責決定功能範圍。這兩件事必須分開理解,不能把「已登入」誤認成「所有功能都可以使用」。</p>
+
+        <figure class="section-figure">
+          <img src="assets/token_and_security.png" alt="房子剖面圖,顯示不同角色手持不同鑰匙,只能進入對應房間" width="1200" height="675" />
+          <figcaption>身份確認之後,鑰匙決定的是「能進哪個房間」,不是「整棟房子都能進」。</figcaption>
+        </figure>
+
+        <div class="table-wrap">
+          <table>
+            <caption>權限設計重點</caption>
+            <thead><tr><th style="width:26%">項目</th><th>說明</th></tr></thead>
+            <tbody>
+              <tr><td>身份確認</td><td>使用者必須先登入,系統才會承認他的身份</td></tr>
+              <tr><td>功能權限</td><td>不同角色會看到不同功能入口</td></tr>
+              <tr><td>選單範圍</td><td>選單代表使用者可進入的功能範圍</td></tr>
+              <tr><td>個人例外</td><td>特定使用者可以有額外開放或排除</td></tr>
+              <tr><td>後端檢查</td><td>真正的資料操作仍由後端確認權限</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">角色與功能權限</h3>
+        <p class="body-p">Dodo Admin 採用角色導向的權限設計:先定義角色,再決定這個角色可以使用哪些功能。權限不用逐一設定在每個人身上,多數使用者可透過角色快速管理,少數特殊情況再用個人例外處理。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:26%">角色</th><th>可使用功能</th></tr></thead>
+            <tbody>
+              <tr><td>管理者</td><td>使用者管理、選單管理、系統設定</td></tr>
+              <tr><td>一般使用者</td><td>與自己工作相關的功能</td></tr>
+              <tr><td>特定職務</td><td>依職務開放對應功能</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">個人例外(少數情況,不取代角色設計)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:26%">情境</th><th>說明</th></tr></thead>
+            <tbody>
+              <tr><td>額外開放</td><td>某位使用者需要臨時看到特定功能</td></tr>
+              <tr><td>特別排除</td><td>某位使用者雖屬於角色,但不應看到某功能</td></tr>
+              <tr><td>職務過渡</td><td>使用者正在交接職務,需要短期調整功能</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">安全原則</h3>
+        <div class="principle-grid">
+          <div class="principle-chip">
+            <span class="badge badge-verify">身份與權限分離</span>
+            <p>登入只代表身份成立,不代表擁有所有權限</p>
+          </div>
+          <div class="principle-chip">
+            <span class="badge badge-verify">後端是權限依據</span>
+            <p>前端顯示結果不能取代後端檢查</p>
+          </div>
+          <div class="principle-chip">
+            <span class="badge badge-verify">角色優先</span>
+            <p>大多數權限應透過角色管理</p>
+          </div>
+          <div class="principle-chip">
+            <span class="badge badge-caution">例外克制使用</span>
+            <p>個人例外只處理少數特殊情況</p>
+          </div>
+          <div class="principle-chip">
+            <span class="badge badge-not">拒絕優先</span>
+            <p>若同時有開放與排除,應以排除為準</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-h">
+      <div class="container">
+        <span class="eyebrow">05 · 常見問題</span>
+        <h2 id="faq-h">常見問題</h2>
+
+        <figure class="section-figure">
+          <img src="assets/qa.png" alt="一群人圍著一位講解者提問,講解者手拿說明文件正在回答" width="1200" height="675" />
+          <figcaption>先把大家最常問的問題攤開來講清楚。</figcaption>
+        </figure>
+
+        <details class="faq-item" open>
+          <summary>Dodo Admin 是 ERP 嗎?
+            <svg class="chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+          </summary>
+          <div class="faq-a">
+            <p>不是。Dodo Admin 是企業後台管理系統的基礎平台,重點是提供登入、權限、選單、版面、資料管理與資料表等共用能力。它可以支撐未來的業務模組,但本身不等於完整 ERP。</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Dodo Admin 目前的核心範圍是什麼?
+            <svg class="chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+          </summary>
+          <div class="faq-a">
+            <p>Dodo Admin 的核心範圍,是建立所有後台管理功能都會用到的基礎能力:登入、權限、選單、後台版面、資料管理、資料表、共用操作流程。</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>登入之後,所有功能都能直接使用嗎?
+            <svg class="chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+          </summary>
+          <div class="faq-a">
+            <p>登入只代表系統確認使用者身份。使用者能看到哪些功能,還要依照角色、選單權限與個人例外決定。</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>前端隱藏選單,就代表安全了嗎?
+            <svg class="chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+          </summary>
+          <div class="faq-a">
+            <p>前端隱藏選單是一種使用體驗控制,真正的資料操作仍需要由後端確認權限。</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>可以加入採購、訂單、庫存這類功能嗎?
+            <svg class="chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+          </summary>
+          <div class="faq-a">
+            <p>可以。這些可以作為可擴充的業務模組加入,建立在 Dodo Admin 已經打穩的基礎能力之上。</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>為什麼文件裡會提到 AI agent?
+            <svg class="chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+          </summary>
+          <div class="faq-a">
+            <p>因為 Dodo Admin 的目標之一,是讓工程師與 AI agent 都能穩定理解並接手專案。清楚的文件、固定的資料夾結構與一致的開發規則,能降低交接成本,也能讓 AI 協作更穩定。</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer class="site-foot">
+      <div class="container">
+        <p>本頁彙整自 <code>docs/A-operations-營運與產品/</code> 底下的五份核心文件(產品意圖、功能規格、使用流程、權限說明、常見問題)。</p>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
+    var sections = links.map(function (a) {
+      return document.querySelector(a.getAttribute('href'));
+    });
+
+    function setActive(id) {
+      links.forEach(function (a) {
+        var match = a.getAttribute('href') === '#' + id;
+        if (match) { a.setAttribute('aria-current', 'true'); }
+        else { a.removeAttribute('aria-current'); }
+      });
+    }
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) { setActive(entry.target.id); }
+        });
+      }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+      sections.forEach(function (s) { if (s) observer.observe(s); });
+    }
+
+    if (sections[0]) { setActive(sections[0].id); }
+  })();
+</script>
+</body>
+</html>

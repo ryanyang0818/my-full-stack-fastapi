@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dodo Admin 系統登入機制說明 v1</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --paper: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #dbe5ee;
+      --blue: #0369a1;
+      --blue-soft: #e0f2fe;
+      --teal: #0f766e;
+      --teal-soft: #ccfbf1;
+      --amber: #b45309;
+      --amber-soft: #fef3c7;
+      --red: #b91c1c;
+      --red-soft: #fee2e2;
+      --slate-soft: #f1f5f9;
+      --shadow: 0 20px 55px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+      --max: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: var(--slate-soft);
+      color: #1e293b;
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 0.92em;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(219, 229, 238, 0.92);
+      background: rgba(248, 250, 252, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      gap: 22px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .nav {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      font-size: 14px;
+    }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 42px 24px 72px;
+    }
+
+    .hero {
+      margin-bottom: 28px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 860px;
+      font-size: 38px;
+    }
+
+    h2 {
+      margin-bottom: 14px;
+      font-size: 24px;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 10px 35px rgba(15, 23, 42, 0.04);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .callout {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--slate-soft);
+    }
+
+    .callout.blue {
+      border-color: #bae6fd;
+      background: var(--blue-soft);
+    }
+
+    .callout.teal {
+      border-color: #99f6e4;
+      background: var(--teal-soft);
+    }
+
+    .callout.amber {
+      border-color: #fde68a;
+      background: var(--amber-soft);
+    }
+
+    .callout.red {
+      border-color: #fecaca;
+      background: var(--red-soft);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--slate-soft);
+      color: #334155;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--slate-soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .badge.teal {
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .badge.red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .summary-list,
+    .rule-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .summary-list li,
+    .rule-list li {
+      padding-left: 4px;
+    }
+
+    .diagram {
+      width: 100%;
+      min-height: 260px;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .diagram text {
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .diagram {
+        overflow-x: auto;
+      }
+
+      .diagram svg {
+        min-width: 860px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .page {
+        padding: 28px 16px 56px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">D</span>
+        <span>Dodo Admin 系統登入機制</span>
+      </div>
+      <nav class="nav" aria-label="文件導覽">
+        <a href="#summary">摘要</a>
+        <a href="#objects">資料庫物件</a>
+        <a href="#logic">邏輯</a>
+        <a href="#examples">範例</a>
+        <a href="#components">React</a>
+        <a href="#controllers">FastAPI</a>
+        <a href="#boundaries">邊界</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Login Foundation · Version 1</div>
+      <h1>Dodo Admin 系統登入：帳密驗證、JWT 與密碼復原</h1>
+      <p class="lead">
+        本文件說明 Dodo Admin 目前的登入機制，把資料庫邏輯、前端頁面邏輯、程式碼邏輯拆開，避免把「前端存有 token」誤認成「後端已驗證身份」。
+      </p>
+    </section>
+
+    <section id="summary" class="section">
+      <h2>摘要</h2>
+      <ul class="summary-list">
+        <li>登入採用 <strong>OAuth2 Password Flow</strong>：帳號密碼換取一張 <code>JWT access_token</code>，沒有 refresh token、沒有 session 表。</li>
+        <li>密碼用 <strong>Argon2</strong>（備援 Bcrypt）雜湊，原文密碼從不落地、也不會出現在任何 log。</li>
+        <li><code>authenticate()</code> 對「帳號不存在」與「密碼錯誤」一律回應相同錯誤，並用 dummy hash 補一次驗證運算，<strong>防 timing attack 與帳號列舉</strong>。</li>
+        <li>前端把 <code>access_token</code> 存在 <code>localStorage</code>，之後每個 API 請求帶 <code>Authorization: Bearer</code>；token 過期或失效則導回登入頁。</li>
+        <li>忘記密碼走 <strong>Email Token</strong> 流程：寄送有時效的重設連結，過程中同樣不洩漏「這個信箱是否存在」。</li>
+        <li>目前不做 2FA / OTP、不做登入失敗鎖定、不做多裝置 session 管理。</li>
+      </ul>
+    </section>
+
+    <section id="objects" class="section">
+      <h2>相關的資料庫物件</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>資料庫物件</th>
+            <th>分類</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>user.hashed_password</code></td>
+            <td><span class="badge">憑證</span></td>
+            <td>Argon2 雜湊後的密碼，是 <code>authenticate()</code> 比對的依據。</td>
+          </tr>
+          <tr>
+            <td><code>user.is_active</code></td>
+            <td><span class="badge">狀態</span></td>
+            <td>停用帳號即使密碼正確仍無法登入，登入與 token 驗證皆會檢查。</td>
+          </tr>
+          <tr>
+            <td><code>user.last_login_at</code></td>
+            <td><span class="badge blue">紀錄</span></td>
+            <td>每次 <code>authenticate()</code> 成功就更新，用於追蹤最後登入時間。</td>
+          </tr>
+          <tr>
+            <td>JWT <code>access_token</code></td>
+            <td><span class="badge teal">憑證（非資料表）</span></td>
+            <td>不落地資料庫，內容是 <code>sub=user.id</code> + 到期時間，由 <code>SECRET_KEY</code> 簽章。</td>
+          </tr>
+          <tr>
+            <td>密碼重設 token</td>
+            <td><span class="badge teal">憑證（非資料表）</span></td>
+            <td>同樣是簽章後的 JWT，不存資料庫，靠到期時間與簽章本身防偽造。</td>
+          </tr>
+          <tr>
+            <td><code>DUMMY_HASH</code></td>
+            <td><span class="badge red">防護機制</span></td>
+            <td>固定的 Argon2 雜湊常數，帳號不存在時仍執行一次驗證運算，拉平回應時間。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="logic" class="section">
+      <h2>邏輯</h2>
+
+      <h3>資料庫邏輯</h3>
+      <p>
+        資料庫只保存「密碼雜湊」與「帳號狀態」，不保存 token、不保存登入 session；身份驗證的結果只活在 JWT 裡。
+      </p>
+      <div class="diagram" aria-label="資料庫登入邏輯圖">
+        <svg viewBox="0 0 1040 260" role="img">
+          <defs>
+            <marker id="arrow-login-db" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#0369a1"></path>
+            </marker>
+          </defs>
+          <rect x="30" y="48" width="170" height="62" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="115" y="74" text-anchor="middle" font-size="15" font-weight="700" fill="#075985">email + password</text>
+          <text x="115" y="96" text-anchor="middle" font-size="13" fill="#075985">使用者輸入</text>
+
+          <rect x="270" y="48" width="200" height="62" rx="8" fill="#f1f5f9" stroke="#dbe5ee"></rect>
+          <text x="370" y="74" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">user.hashed_password</text>
+          <text x="370" y="96" text-anchor="middle" font-size="13" fill="#334155">Argon2 比對</text>
+
+          <rect x="540" y="48" width="200" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="640" y="74" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">user.last_login_at</text>
+          <text x="640" y="96" text-anchor="middle" font-size="13" fill="#0f766e">驗證成功才更新</text>
+
+          <rect x="810" y="48" width="200" height="62" rx="8" fill="#fef3c7" stroke="#fde68a"></rect>
+          <text x="910" y="74" text-anchor="middle" font-size="15" font-weight="700" fill="#b45309">JWT access_token</text>
+          <text x="910" y="96" text-anchor="middle" font-size="13" fill="#b45309">不落地，僅簽章回傳</text>
+
+          <line x1="200" y1="79" x2="270" y2="79" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-login-db)"></line>
+          <line x1="470" y1="79" x2="540" y2="79" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-login-db)"></line>
+          <line x1="740" y1="79" x2="810" y2="79" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-login-db)"></line>
+
+          <rect x="270" y="172" width="280" height="56" rx="8" fill="#fee2e2" stroke="#fecaca"></rect>
+          <text x="410" y="198" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c">帳號不存在</text>
+          <text x="410" y="218" text-anchor="middle" font-size="13" fill="#b91c1c">仍跑 DUMMY_HASH 驗證一次</text>
+          <path d="M370 110 C370 140, 390 160, 410 172" fill="none" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arrow-login-db)"></path>
+        </svg>
+      </div>
+
+      <h3 style="margin-top: 28px;">前端頁面邏輯</h3>
+      <p>
+        前端不驗證密碼，只負責送出表單、保存 token、並在之後每個請求附帶它；token 失效時統一導回登入頁，不嘗試自行判斷身份是否有效。
+      </p>
+      <div class="diagram" aria-label="前端登入頁面邏輯圖">
+        <svg viewBox="0 0 1040 260" role="img">
+          <defs>
+            <marker id="arrow-login-ui" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#0f766e"></path>
+            </marker>
+          </defs>
+          <rect x="36" y="72" width="170" height="64" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="121" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#075985">LoginForm</text>
+          <text x="121" y="122" text-anchor="middle" font-size="13" fill="#075985">送出帳密</text>
+
+          <rect x="282" y="72" width="190" height="64" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="377" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">useAuth.login()</text>
+          <text x="377" y="122" text-anchor="middle" font-size="13" fill="#0f766e">LoginService.loginAccessToken</text>
+
+          <rect x="548" y="72" width="220" height="64" rx="8" fill="#fef3c7" stroke="#fde68a"></rect>
+          <text x="658" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#b45309">localStorage</text>
+          <text x="658" y="122" text-anchor="middle" font-size="13" fill="#b45309">access_token 寄存</text>
+
+          <line x1="206" y1="104" x2="282" y2="104" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-login-ui)"></line>
+          <line x1="472" y1="104" x2="548" y2="104" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-login-ui)"></line>
+
+          <rect x="282" y="188" width="486" height="48" rx="8" fill="#fee2e2" stroke="#fecaca"></rect>
+          <text x="525" y="217" text-anchor="middle" font-size="15" font-weight="700" fill="#b91c1c">token 失效或缺失 → 一律導回 /login，不嘗試本地判斷身份</text>
+          <path d="M658 136 C658 160, 600 180, 525 188" fill="none" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arrow-login-ui)"></path>
+        </svg>
+      </div>
+
+      <h3 style="margin-top: 28px;">程式碼邏輯</h3>
+      <p>
+        每個受保護的 API 都透過 <code>get_current_user</code> 解析 JWT、查回 <code>User</code>，並檢查 <code>is_active</code>；任何一步失敗即回 <code>403</code>/<code>400</code>，不會放行。
+      </p>
+      <div class="diagram" aria-label="程式碼登入邏輯圖">
+        <svg viewBox="0 0 1040 300" role="img">
+          <defs>
+            <marker id="arrow-login-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#0369a1"></path>
+            </marker>
+          </defs>
+          <rect x="36" y="68" width="160" height="62" rx="8" fill="#e0f2fe" stroke="#7dd3fc"></rect>
+          <text x="116" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#075985">Request</text>
+          <text x="116" y="118" text-anchor="middle" font-size="13" fill="#075985">Bearer token</text>
+
+          <rect x="270" y="68" width="190" height="62" rx="8" fill="#f1f5f9" stroke="#dbe5ee"></rect>
+          <text x="365" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">jwt.decode</text>
+          <text x="365" y="118" text-anchor="middle" font-size="13" fill="#334155">驗證簽章 + 過期時間</text>
+
+          <rect x="534" y="68" width="190" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="629" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">session.get(User)</text>
+          <text x="629" y="118" text-anchor="middle" font-size="13" fill="#0f766e">查回使用者 + is_active</text>
+
+          <rect x="798" y="34" width="180" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"></rect>
+          <text x="888" y="60" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">CurrentUser</text>
+          <text x="888" y="84" text-anchor="middle" font-size="13" fill="#0f766e">放行進入 handler</text>
+
+          <rect x="798" y="152" width="180" height="62" rx="8" fill="#fee2e2" stroke="#fecaca"></rect>
+          <text x="888" y="178" text-anchor="middle" font-size="15" font-weight="700" fill="#b91c1c">403 / 400 / 404</text>
+          <text x="888" y="202" text-anchor="middle" font-size="13" fill="#b91c1c">token 無效 / 帳號停用 / 找不到</text>
+
+          <line x1="196" y1="99" x2="270" y2="99" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-login-code)"></line>
+          <line x1="460" y1="99" x2="534" y2="99" stroke="#0369a1" stroke-width="2.5" marker-end="url(#arrow-login-code)"></line>
+          <path d="M724 84 C754 64, 766 65, 798 65" fill="none" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arrow-login-code)"></path>
+          <path d="M724 114 C758 155, 768 183, 798 183" fill="none" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arrow-login-code)"></path>
+
+          <text x="752" y="55" font-size="13" fill="#0f766e">valid</text>
+          <text x="750" y="176" font-size="13" fill="#b91c1c">invalid</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>細節</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>規則</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>密碼一律雜湊，不存明文</td>
+            <td><code>get_password_hash()</code> 用 Argon2，舊資料若曾用 Bcrypt 仍可驗證並自動升級雜湊。</td>
+          </tr>
+          <tr>
+            <td>帳號不存在與密碼錯誤回應一致</td>
+            <td>避免攻擊者藉錯誤訊息差異枚舉出哪些 email 已註冊。</td>
+          </tr>
+          <tr>
+            <td>Timing attack 防護</td>
+            <td>帳號不存在時仍對 <code>DUMMY_HASH</code> 執行一次驗證，讓回應時間不洩漏「帳號是否存在」。</td>
+          </tr>
+          <tr>
+            <td>token 是唯一憑證</td>
+            <td>沒有 server-side session，登出只是前端刪除 <code>localStorage</code> 裡的 token，後端不會主動失效它（到期前仍可用）。</td>
+          </tr>
+          <tr>
+            <td>停用帳號隨時擋下</td>
+            <td><code>is_active=false</code> 不論登入或既有 token 驗證，都會被擋，即使 token 尚未過期。</td>
+          </tr>
+          <tr>
+            <td>密碼重設不洩漏帳號存在與否</td>
+            <td>無論信箱是否註冊，<code>/password-recovery/{email}</code> 回應文字都相同。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="examples" class="section">
+      <h2>範例</h2>
+      <div class="grid-2">
+        <div class="callout teal">
+          <h3>正常登入</h3>
+          <p>帳密正確且 <code>is_active=true</code>。</p>
+          <p>結果：回傳 <code>access_token</code>，<code>last_login_at</code> 更新。</p>
+        </div>
+        <div class="callout red">
+          <h3>密碼錯誤</h3>
+          <p>帳號存在，但密碼比對失敗。</p>
+          <p>結果：回 <code>400 Incorrect email or password</code>，跟帳號不存在時的訊息完全相同。</p>
+        </div>
+        <div class="callout amber">
+          <h3>帳號被停用</h3>
+          <p>帳密正確，但 <code>is_active=false</code>。</p>
+          <p>結果：回 <code>400 Inactive user</code>；若該使用者手上還有未過期的舊 token，呼叫任何 API 也會被 <code>get_current_user</code> 擋下。</p>
+        </div>
+        <div class="callout blue">
+          <h3>忘記密碼</h3>
+          <p>使用者送出信箱，無論是否註冊過。</p>
+          <p>結果：畫面回應一律是「若該信箱已註冊，我們已寄出重設連結」；只有真的註冊過才會收到信。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="components" class="section">
+      <h2>React Component</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>重點檔案</th>
+            <th>簡短用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>frontend/src/routes/login.tsx</code></td>
+            <td>登入頁路由與表單畫面，呼叫 <code>useAuth().login()</code> 送出帳密。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/hooks/useAuth.ts</code></td>
+            <td>封裝 <code>LoginService.loginAccessToken</code>，登入成功寫入 <code>localStorage</code>，登出時清除並重置頁籤狀態。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/client</code>（自動產生 SDK）</td>
+            <td><code>LoginService</code> 對應 <code>/login/access-token</code> 等後端 API，型別隨 OpenAPI schema 重新產生。</td>
+          </tr>
+          <tr>
+            <td><code>frontend/src/components/Common/*</code>（路由 guard）</td>
+            <td>讀取 <code>isLoggedIn()</code>（即 <code>localStorage</code> 是否有 token）決定是否導向登入頁。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="controllers" class="section">
+      <h2>FastAPI Controller</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>重點檔案</th>
+            <th>簡短用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>backend/app/api/routes/login.py</code></td>
+            <td>提供 <code>/login/access-token</code>、<code>/login/test-token</code>、<code>/password-recovery</code>、<code>/reset-password</code>。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/crud.py</code></td>
+            <td><code>authenticate()</code> 與 <code>DUMMY_HASH</code>，是帳密驗證與防 timing attack 的核心邏輯。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/core/security.py</code></td>
+            <td><code>create_access_token</code>、<code>verify_password</code>、<code>get_password_hash</code>，封裝 JWT 與 Argon2/Bcrypt。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/api/deps.py</code></td>
+            <td><code>get_current_user</code> 解析 token 並查回 <code>User</code>，是所有受保護 API 的共用入口。</td>
+          </tr>
+          <tr>
+            <td><code>backend/app/utils.py</code></td>
+            <td><code>generate_password_reset_token</code>、<code>verify_password_reset_token</code>、寄信內容組裝。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="boundaries" class="section">
+      <h2>避免誤會與不做的地方</h2>
+      <div class="grid-2">
+        <div class="callout red">
+          <h3>不做的安全機制</h3>
+          <ul class="rule-list">
+            <li>不做登入失敗次數鎖定（目前無暴力破解防護）。</li>
+            <li>不做 2FA / OTP（帳密驗證後即直接核發 token）。</li>
+            <li>不做圖形驗證碼（CAPTCHA），尚未串接第三方服務。</li>
+          </ul>
+        </div>
+        <div class="callout amber">
+          <h3>不把前端當身份來源</h3>
+          <ul class="rule-list">
+            <li><code>localStorage</code> 有 token 只代表「曾經登入過」，不代表後端一定承認。</li>
+            <li>token 過期或帳號被停用後，前端要靠 API 回應的 401/403 才會知道並登出。</li>
+            <li>沒有 server-side session，後端無法「主動踢人下線」，只能等 token 到期。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">
+      Draft v1 for discussion · Dodo Admin · System Login Mechanism Documentation
+    </p>
+  </main>
+</body>
+</html>
